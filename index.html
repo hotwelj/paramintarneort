@@ -15,7 +15,6 @@
       text-align: center;
     }
 
-    /* ===== OVERLAY DE CONTRASEÑA ===== */
     #pwd-overlay {
       position: fixed;
       inset: 0;
@@ -26,6 +25,12 @@
       backdrop-filter: blur(12px) brightness(0.4);
       -webkit-backdrop-filter: blur(12px) brightness(0.4);
       background: rgba(11, 58, 117, 0.55);
+      transition: opacity 0.6s ease;
+    }
+
+    #pwd-overlay.saliendo {
+      opacity: 0;
+      pointer-events: none;
     }
 
     #pwd-box {
@@ -37,6 +42,12 @@
       text-align: center;
       animation: popIn 0.35s cubic-bezier(.22,1,.36,1);
       border-top: 4px solid #0b3a75;
+      transition: border-top-color 0.3s, transform 0.4s;
+    }
+
+    #pwd-box.correcto {
+      border-top-color: #16a34a;
+      transform: scale(1.03);
     }
 
     @keyframes popIn {
@@ -44,11 +55,11 @@
       to   { transform: scale(1) translateY(0); opacity: 1; }
     }
 
-    #pwd-box .pwd-logo {
-      width: 52px;
-      height: 52px;
-      margin: 0 auto 16px auto;
+    #pwd-box .pwd-lock {
+      font-size: 36px;
+      margin-bottom: 8px;
       display: block;
+      transition: transform 0.3s;
     }
 
     #pwd-box h2 {
@@ -96,13 +107,13 @@
 
     #pwd-box button.pwd-btn:hover { background: #2563eb; }
     #pwd-box button.pwd-btn:active { transform: scale(0.98); }
+    #pwd-box button.pwd-btn.ok { background: #16a34a; }
 
     #pwd-error {
       font-size: 12px;
       color: #dc2626;
       margin-top: 10px;
       display: none;
-      animation: shake 0.3s ease;
     }
 
     @keyframes shake {
@@ -111,12 +122,7 @@
       75% { transform: translateX(6px); }
     }
 
-    #pwd-box .pwd-lock {
-      font-size: 36px;
-      margin-bottom: 8px;
-      display: block;
-    }
-    /* ================================= */
+    .pwd-shake { animation: shake 0.3s ease; }
 
     .header {
       background: #0b3a75;
@@ -623,19 +629,17 @@
 </head>
 <body>
 
-<!-- ===== OVERLAY DE CONTRASEÑA ===== -->
+<!-- OVERLAY CONTRASEÑA -->
 <div id="pwd-overlay">
   <div id="pwd-box">
-    <span class="pwd-lock">🔒</span>
-    <img class="pwd-logo" src="https://i.imgur.com/CD8poZf.png" alt="Logo">
+    <span class="pwd-lock" id="pwd-lock">🔒</span>
     <h2>Ort Piratas</h2>
     <p class="pwd-sub">Ingresá la contraseña para acceder</p>
     <input type="password" id="pwd-input" placeholder="Contraseña..." autofocus>
-    <button class="pwd-btn" onclick="verificarClave()">Entrar</button>
+    <button class="pwd-btn" id="pwd-btn" onclick="verificarClave()">Entrar</button>
     <p id="pwd-error">❌ Contraseña incorrecta, intentá de nuevo</p>
   </div>
 </div>
-<!-- ================================= -->
 
 <div class="header">
   <div class="header-left">
@@ -860,16 +864,8 @@
 <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆ Volver arriba</button>
 
 <script>
-  // ===== SISTEMA DE CONTRASEÑA =====
-  // Para agregar/cambiar contraseñas:
-  // 1. Abrí la consola del navegador (F12)
-  // 2. Ejecutá: crypto.subtle.digest('SHA-256', new TextEncoder().encode('TU_CLAVE'))
-  //      .then(b => console.log([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')))
-  // 3. Copiá el hash que aparece y agregalo al array de abajo
-
   const HASHES_VALIDOS = [
-    "3305fea36bd49dc0fd4504dff836853483b6c525d90ed8a559af593918fc6064", // usuario.gratis
-    // "HASH_DE_OTRA_CLAVE_ACA",   <-- descomentá y agregá más si querés
+    "3305fea36bd49dc0fd4504dff836853483b6c525d90ed8a559af593918fc6064",
   ];
 
   async function sha256(str) {
@@ -884,16 +880,33 @@
     const hash = await sha256(input);
 
     if (HASHES_VALIDOS.includes(hash)) {
-      document.getElementById("pwd-overlay").style.display = "none";
+      const box = document.getElementById("pwd-box");
+      const overlay = document.getElementById("pwd-overlay");
+      const lock = document.getElementById("pwd-lock");
+      const btn = document.getElementById("pwd-btn");
+
+      lock.textContent = "✅";
+      btn.textContent = "¡Acceso concedido!";
+      btn.classList.add("ok");
+      document.getElementById("pwd-input").disabled = true;
+      box.classList.add("correcto");
+
       sessionStorage.setItem("auth_piratas", "ok");
+
+      setTimeout(() => {
+        overlay.classList.add("saliendo");
+        setTimeout(() => overlay.style.display = "none", 600);
+      }, 700);
+
     } else {
       const err = document.getElementById("pwd-error");
+      const input_el = document.getElementById("pwd-input");
       err.style.display = "block";
-      err.style.animation = "none";
-      void err.offsetWidth;
-      err.style.animation = "shake 0.3s ease";
-      document.getElementById("pwd-input").value = "";
-      document.getElementById("pwd-input").focus();
+      input_el.classList.remove("pwd-shake");
+      void input_el.offsetWidth;
+      input_el.classList.add("pwd-shake");
+      input_el.value = "";
+      input_el.focus();
     }
   }
 
@@ -901,11 +914,9 @@
     if (e.key === "Enter") verificarClave();
   });
 
-  // Verificar sesión guardada
   if (sessionStorage.getItem("auth_piratas") === "ok") {
     document.getElementById("pwd-overlay").style.display = "none";
   }
-  // =================================
 
   function cerrarSesion() {
     sessionStorage.removeItem("auth_piratas");
