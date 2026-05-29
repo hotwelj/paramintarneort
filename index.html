@@ -519,6 +519,46 @@
       color: #6b7280;
       line-height: 1.4;
     }
+
+    .footer-version {
+      width: 100%;
+      text-align: center;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .version-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 13px;
+      font-weight: bold;
+      color: #1d4ed8;
+      letter-spacing: 0.5px;
+    }
+
+    .version-badge .version-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #22c55e;
+      display: inline-block;
+    }
+
+    .footer-version .update-date {
+      font-size: 12px;
+      color: #9ca3af;
+    }
   </style>
 </head>
 <body>
@@ -607,6 +647,7 @@
       <button class="genre-btn" data-tooltip="Explorás un mapa grande descubriendo zonas nuevas a tu ritmo" onclick="filterGenre('metroidvania', this)">Metroidvania</button>
       <button class="genre-btn" onclick="filterGenre('clicker', this)">Clicker</button>
       <button class="genre-btn" onclick="filterGenre('terror', this)">Terror</button>
+      <button class="genre-btn" onclick="filterGenre('estrategia', this)">Estrategia</button>
     </div>
 
     <p class="no-results" id="noResults">No se encontró ningún juego.</p>
@@ -731,6 +772,20 @@
         <a class="btn-download" href="https://github.com/hotwelj/juegos-ort/releases/download/Scritchy-Scratchy/Scritchy.Scratchy.zip">⬇ Descargar</a>
       </div>
 
+      <div class="game-card" data-genres="aventura puzzle estrategia">
+        <p class="game-name">Do Not Feed the Monkeys</p>
+        <p class="game-desc">Espiá a desconocidos por cámaras de seguridad. Aprendé sus secretos, pero no interactúes con ellos.</p>
+        <div class="game-tags"><span class="game-tag">Aventura</span><span class="game-tag">Puzzle</span><span class="game-tag">Estrategia</span></div>
+        <a class="btn-download" href="https://github.com/hotwelj/juegosort/releases/download/Do-Not-Feed-The-Monkeys/DoNotfeedtheMonkeys.zip">⬇ Descargar</a>
+      </div>
+
+      <div class="game-card" data-genres="estrategia">
+        <p class="game-name">Plague Inc: Evolved</p>
+        <p class="game-desc">Evolucioná tu patógeno e infectá al mundo entero antes de que la humanidad encuentre la cura.</p>
+        <div class="game-tags"><span class="game-tag">Estrategia</span></div>
+        <a class="btn-download" href="https://github.com/hotwelj/juegosort/releases/download/Plague-Inc/Plague.Inc.Evolved.v1.23.0.12.ALL.DLC.zip">⬇ Descargar</a>
+      </div>
+
     </div>
   </div>
 </div>
@@ -756,6 +811,14 @@
       <strong>Hecho con pasión</strong>
       <p>Para nuestra comunidad pirata.</p>
     </div>
+  </div>
+
+  <div class="footer-version">
+    <span class="version-badge">
+      <span class="version-dot"></span>
+      v1.073
+    </span>
+    <span class="update-date">🗓 Última actualización: 29 de mayo de 2026</span>
   </div>
 </div>
 
