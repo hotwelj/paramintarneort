@@ -66,6 +66,9 @@
     #pwd-hint  { font-size:11px; color:var(--text-hint); margin-top:18px; line-height:1.5; display:none; }
     @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
     .pwd-shake { animation:shake 0.3s ease; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .pwd-spinner { display:inline-block; width:15px; height:15px; border:2.5px solid rgba(255,255,255,0.35); border-top-color:white; border-radius:50%; animation:spin 0.65s linear infinite; vertical-align:middle; margin-right:7px; }
+    #pwd-btn.loading { opacity:0.82; cursor:wait; }
 
     .header { background:var(--header-bg); color:white; padding:15px 30px; display:flex; align-items:center; justify-content:space-between; transition:background 0.3s; }
     .header-left { display:flex; align-items:center; gap:20px; }
@@ -427,7 +430,7 @@
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.082</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.083</span>
     <span class="update-date">🗓 Última actualización: 2 de junio de 2026</span>
   </div>
 </div>
@@ -476,18 +479,38 @@
   async function verificarClave() {
     const val = $("pwd-input").value;
     if (!val) return;
-    const res = await fetch("/.netlify/functions/auth", {
-      method: "POST",
-      body: JSON.stringify({ password: val })
-    });
-    const data = await res.json();
+
+    const btn = $("pwd-btn");
+    btn.disabled = true;
+    btn.innerHTML = '<span class="pwd-spinner"></span>Verificando...';
+    btn.classList.add("loading");
+    $("pwd-input").disabled = true;
+    $("pwd-error").style.display = "none";
+
+    let data;
+    try {
+      const res = await fetch("/.netlify/functions/auth", {
+        method: "POST",
+        body: JSON.stringify({ password: val })
+      });
+      data = await res.json();
+    } catch {
+      btn.disabled = false;
+      btn.textContent = "Entrar";
+      btn.classList.remove("loading");
+      $("pwd-input").disabled = false;
+      $("pwd-input").focus();
+      $("pwd-error").style.display = "block";
+      return;
+    }
+
     if (data.ok) {
       sessionStorage.setItem("auth_piratas", "ok");
       sessionStorage.setItem("auth_token", data.token);
       $("pwd-lock").textContent = "✅";
-      $("pwd-btn").textContent = "¡Acceso concedido!";
-      $("pwd-btn").classList.add("ok");
-      $("pwd-input").disabled = true;
+      btn.textContent = "¡Acceso concedido!";
+      btn.classList.remove("loading");
+      btn.classList.add("ok");
       $("pwd-hint").style.display = "none";
       $("pwd-box").classList.add("correcto");
       setTimeout(() => {
@@ -495,6 +518,10 @@
         setTimeout(() => $("pwd-overlay").style.display = "none", 600);
       }, 700);
     } else {
+      btn.disabled = false;
+      btn.textContent = "Entrar";
+      btn.classList.remove("loading");
+      $("pwd-input").disabled = false;
       $("pwd-error").style.display = "block";
       $("pwd-input").classList.remove("pwd-shake");
       void $("pwd-input").offsetWidth;
