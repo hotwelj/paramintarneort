@@ -1,6 +1,6 @@
 const TOKEN_SECRETO = "ort-piratas-xK92mNq7pL3wZ";
 
-// Links reales de descarga — nunca aparecen en el HTML
+// ── LINKS ──
 const LINKS = {
   "papers-please":          "https://github.com/hotwelj/juegos-ort/releases/download/Papers-Please/papers.please.zip",
   "no-im-not-human":        "https://github.com/hotwelj/juegos-ort/releases/download/No-im-not-human/No_im_not_human.zip",
@@ -24,6 +24,12 @@ const LINKS = {
   "fnaf-2":                 "https://github.com/hotwelj/juegosort/releases/download/FNAF-2/Five.Nights.at.Freddys.2.v1.033.zip",
   "fnaf-3":                 "https://github.com/hotwelj/juegosort/releases/download/FNAF-3/Five.Nights.at.Freddys.3.v1.032.zip",
   "plague-inc":             "https://github.com/hotwelj/juegosort/releases/download/Plague-Inc/Plague.Inc.Evolved.v1.23.0.12.ALL.DLC.zip",
+  "terraria":               "https://github.com/hotwelj/juegosort/releases/download/Terraria/Terraria.v1.4.5.3.zip",
+  "jump-king":              "https://github.com/hotwelj/juegosort/releases/download/Jump-king/Jump.King.v2025.05.30.zip",
+  "celeste":                "https://github.com/hotwelj/juegosort/releases/download/Celeste/Celeste.v2025.02.07.zip",
+  "stardew-valley":         "https://github.com/hotwelj/juegosort/releases/download/Stardew-valley/Stardew.Valley.v1.6.15.zip",
+  "super-meat-boy":         "https://github.com/hotwelj/juegosort/releases/download/Super-meat-boy/Super.Meat.Boy.v1.2.5.ALL.DLC.zip",
+  "slime-rancher":          "https://github.com/hotwelj/juegosort/releases/download/Slime-rancher/Slime.Rancher.v1.4.4.ALL.DLC.zip",
 };
 
 exports.handler = async (event) => {
