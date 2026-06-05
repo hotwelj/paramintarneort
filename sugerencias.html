@@ -87,6 +87,15 @@
     .dropdown-menu a { display:block; padding:12px 16px; text-decoration:none; color:var(--text-main); font-size:14px; font-weight:bold; text-align:left; transition:background 0.15s; }
     .dropdown-menu a:hover { background:var(--bg-page); color:#3b82f6; }
     .dropdown-menu a + a { border-top:1px solid var(--border-card); }
+    .dropdown-btn { background:none; color:white; border:none; font-weight:bold; font-size:14px; padding:8px 12px; border-radius:6px; cursor:pointer; display:flex; align-items:center; gap:6px; opacity:0.9; transition:0.2s; }
+    .dropdown-btn:hover { opacity:1; background:rgba(255,255,255,0.15); }
+    .dropdown-btn .arrow { font-size:10px; transition:transform 0.2s; }
+    .dropdown.open .arrow { transform:rotate(180deg); }
+    .dropdown-menu { display:none; position:absolute; top:calc(100% + 8px); left:0; background:var(--bg-card); border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.2); min-width:180px; overflow:hidden; z-index:100; border:1px solid var(--border-card); }
+    .dropdown.open .dropdown-menu { display:block; }
+    .dropdown-menu a { display:block; padding:12px 16px; text-decoration:none; color:var(--text-main); font-size:14px; font-weight:bold; text-align:left; transition:background 0.15s; }
+    .dropdown-menu a:hover { background:var(--bg-page); color:#3b82f6; }
+    .dropdown-menu a + a { border-top:1px solid var(--border-card); }
     .person-icon { width:36px; height:36px; background:rgba(255,255,255,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background 0.2s; border:none; padding:0; }
     .person-icon:hover { background:rgba(255,255,255,0.35); }
     .person-icon svg { width:20px; height:20px; fill:white; }
@@ -210,6 +219,29 @@
     <div class="nav">
       <a href="index.html">Home</a>
       <a href="sugerencias.html" style="background:rgba(255,255,255,0.15); opacity:1;">Sugerencias</a>
+      <div class="dropdown" id="dropdown-webs">
+        <button class="dropdown-btn" onclick="toggleDropdown('dropdown-webs')">Webs principales <span class="arrow">▼</span></button>
+        <div class="dropdown-menu">
+          <a href="https://fitgirl-repacks.site/" target="_blank">Fitgirl</a>
+          <a href="https://steamunlocked.org/" target="_blank">Steam Unlocked</a>
+          <a href="https://crotorrents.com/" target="_blank">Crotorrents</a>
+        </div>
+      </div>
+      <div class="dropdown" id="dropdown-chrome">
+        <button class="dropdown-btn" onclick="toggleDropdown('dropdown-chrome')">Extensiones Chrome <span class="arrow">▼</span></button>
+        <div class="dropdown-menu">
+          <a href="https://chromewebstore.google.com/detail/boxel-3d/mjjgmlmpeaikcaajghilhnioimmaibon" target="_blank">Boxel 3D</a>
+          <a href="https://chromewebstore.google.com/detail/boxel-rebound/iginnfkhmmfhlkagcmpgofnjhanpmklb" target="_blank">Boxel Rebound</a>
+          <a href="https://chromewebstore.google.com/detail/boxel-golf/mmgjkfjlmdkmoipndaeombfnomjfgeff" target="_blank">Boxel Golf</a>
+          <a href="https://chromewebstore.google.com/detail/slope-game-unblocked-game/bhphgjfiljhcpbjgbkkgkikokmidjoga" target="_blank">Slope</a>
+          <a href="https://chromewebstore.google.com/detail/space-waves-unblocked-gam/gkapokeohapeknikagjgbakpljlhcoag" target="_blank">Space Waves</a>
+          <a href="https://chromewebstore.google.com/detail/2048/ijkmjnaahlnmdjjlbhbjbhlnmadmmlgg" target="_blank">2048</a>
+          <a href="https://chromewebstore.google.com/detail/snake-unblocked-games/kcfefleifiebaninaolcmhmlfkcdkhfc" target="_blank">Snake</a>
+          <a href="https://chromewebstore.google.com/detail/flappy-bird-offline/pidkjcapccmhpdokcjnkngcflobhopdl" target="_blank">Flappy Bird</a>
+          <a href="https://chromewebstore.google.com/detail/pacman-game-offline-for-g/ciiepdilkgkacpioofhgljmidgjodjcl" target="_blank">Pac-Man</a>
+          <a href="https://chromewebstore.google.com/detail/pac-man-and-ms-pac-man/gjdfppeajganomoaogedoelileclieai" target="_blank">Pac-Man & Ms. Pac-Man</a>
+        </div>
+      </div>
     </div>
   </div>
   <div class="header-right">
@@ -245,7 +277,7 @@
 
     <div class="card-body">
     <div id="form-wrapper">
-      <form name="sugerencias" method="POST" data-netlify="true" onsubmit="enviarFormulario(event)">
+      <form name="sugerencias" method="POST" netlify onsubmit="enviarFormulario(event)">
         <input type="hidden" name="form-name" value="sugerencias">
         <input type="hidden" name="usuario" id="campo-usuario" value="">
 
@@ -302,7 +334,7 @@
 <!-- FOOTER -->
 <div class="footer">
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.093</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.095</span>
     <span class="update-date">🗓 Última actualización: 5 de junio de 2026</span>
   </div>
 </div>
