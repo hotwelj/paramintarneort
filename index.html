@@ -137,6 +137,7 @@
     .game-tags { display:flex; flex-wrap:wrap; gap:4px; justify-content:center; margin-top:4px; }
     .game-tag  { font-size:10px; padding:2px 8px; border-radius:20px; background:var(--tag-bg); color:var(--tag-color); font-weight:bold; }
 
+    /* Botón descarga — ahora es un button, no un link */
     .btn-download { margin-top:10px; display:inline-flex; align-items:center; gap:6px; padding:8px 18px; background:var(--btn-dl-bg); color:var(--btn-dl-color); border-radius:8px; text-decoration:none; font-size:13px; font-weight:bold; transition:background 0.2s; border:none; cursor:pointer; font-family:Arial,sans-serif; }
     .btn-download:hover { background:var(--btn-dl-hover); }
     .btn-download:disabled { opacity:0.6; cursor:wait; }
@@ -200,6 +201,7 @@
     <div class="logo"><a href="index.html"><img src="https://i.imgur.com/CD8poZf.png"></a></div>
     <div class="nav">
       <a href="index.html">Home</a>
+      <a href="sugerencias.html">Sugerencias</a>
       <div class="dropdown" id="dropdown-webs">
         <button class="dropdown-btn" onclick="toggleDropdown('dropdown-webs')">Webs principales <span class="arrow">▼</span></button>
         <div class="dropdown-menu">
@@ -217,10 +219,6 @@
           <a href="https://chromewebstore.google.com/detail/slope-game-unblocked-game/bhphgjfiljhcpbjgbkkgkikokmidjoga" target="_blank">Slope</a>
           <a href="https://chromewebstore.google.com/detail/space-waves-unblocked-gam/gkapokeohapeknikagjgbakpljlhcoag" target="_blank">Space Waves</a>
           <a href="https://chromewebstore.google.com/detail/2048/ijkmjnaahlnmdjjlbhbjbhlnmadmmlgg" target="_blank">2048</a>
-          <a href="https://chromewebstore.google.com/detail/snake-unblocked-games/kcfefleifiebaninaolcmhmlfkcdkhfc" target="_blank">Snake</a>
-          <a href="https://chromewebstore.google.com/detail/flappy-bird-offline/pidkjcapccmhpdokcjnkngcflobhopdl" target="_blank">Flappy Bird</a>
-          <a href="https://chromewebstore.google.com/detail/pacman-game-offline-for-g/ciiepdilkgkacpioofhgljmidgjodjcl" target="_blank">Pac-Man</a>
-          <a href="https://chromewebstore.google.com/detail/pac-man-and-ms-pac-man/gjdfppeajganomoaogedoelileclieai" target="_blank">Pac-Man & Ms. Pac-Man</a>
         </div>
       </div>
     </div>
@@ -278,7 +276,7 @@
       <button class="genre-btn" onclick="filterGenre('simulacion', this)">Simulación</button>
     </div>
     <p class="no-results" id="noResults">No se encontró ningún juego.</p>
-    <div class="games-grid">
+<div class="games-grid">
 
       <div class="game-card" data-genres="puzzle aventura">
         <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/239030/header.jpg" alt="Papers Please" loading="lazy" onerror="this.style.display='none'">
@@ -290,18 +288,18 @@
         </div>
       </div>
 
-      <div class="game-card" data-genres="terror aventura">
-        <img class="game-cover" src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3180070/fadebc14211b17b5a6603926612ead9294cad9ce/header.jpg?t=1773933645" alt="No I'm not a Human" loading="lazy" onerror="this.style.display='none'">
+      <div class="game-card" data-genres="accion humor">
+        <div class="game-cover-placeholder">🧟</div>
         <div class="game-card-body">
-          <p class="game-name">No, I'm not a Human</p>
-          <p class="game-desc">El mundo está llegando a su fin. Los Visitantes llaman a tu puerta haciéndose pasar por humanos. Interrogalos, buscá las señales y decidí quién entra... y quién no.</p>
-          <div class="game-tags"><span class="game-tag">Terror</span><span class="game-tag">Aventura</span></div>
+          <p class="game-name">No, I'm not human</p>
+          <p class="game-desc">Detectá zombies que intentan hacerse pasar por humanos.</p>
+          <div class="game-tags"><span class="game-tag">Acción</span><span class="game-tag">Humor</span></div>
           <button class="btn-download" onclick="descargar(this, 'no-im-not-human')">⬇ Descargar</button>
         </div>
       </div>
 
       <div class="game-card" data-genres="terror aventura">
-        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/2638370/header.jpg" alt="FNAF Into the pit" loading="lazy" onerror="this.style.display='none'">
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/2581400/header.jpg" alt="FNAF Into the pit" loading="lazy" onerror="this.style.display='none'">
         <div class="game-card-body">
           <p class="game-name">FNAF Into the pit</p>
           <p class="game-desc">Explorá, sobreviví y descubrí los secretos que esconde el lugar.</p>
@@ -360,12 +358,12 @@
         </div>
       </div>
 
-      <div class="game-card" data-genres="clicker aventura">
-        <img class="game-cover" src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3370870/4622468af31c1bbd2d87e53a1971719d1cead354/header.jpg?t=1771908034" alt="Berry Bury Berry" loading="lazy" onerror="this.style.display='none'">
+      <div class="game-card" data-genres="aventura">
+        <div class="game-cover-placeholder">🫐</div>
         <div class="game-card-body">
-          <p class="game-name">Berry Bury Berry</p>
-          <p class="game-desc">Cultivá berries, tiralas a un hoyo misterioso y acumulá plata. Un incremental surreal en primera persona con amigos-berry, mejoras y los oscuros secretos de un jardín maldito.</p>
-          <div class="game-tags"><span class="game-tag">Clicker</span><span class="game-tag">Aventura</span></div>
+          <p class="game-name">Berry Burry Berry</p>
+          <p class="game-desc">Un juego indie de aventura y exploración colorido.</p>
+          <div class="game-tags"><span class="game-tag">Aventura</span></div>
           <button class="btn-download" onclick="descargar(this, 'berry-burry-berry')">⬇ Descargar</button>
         </div>
       </div>
@@ -381,17 +379,17 @@
       </div>
 
       <div class="game-card" data-genres="clicker">
-        <img class="game-cover" src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4273120/1eb346a999dfed417301a63e5d5b3f7739290eb0/header.jpg?t=1777467140" alt="Particul" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-cover-placeholder">⚛️</div>
         <div class="game-card-body">
           <p class="game-name">Particul</p>
-          <p class="game-desc">Hacé clic para minar partículas, vendelas y acumulá ganancias. Automatizá la extracción, investigá nuevas tecnologías y negociá en el mercado.</p>
+          <p class="game-desc">Hacé clic para minar partículas, vendelas y acumulá ganancias. Como Cookie Clicker pero con física.</p>
           <div class="game-tags"><span class="game-tag">Clicker</span></div>
           <button class="btn-download" onclick="descargar(this, 'particul')">⬇ Descargar</button>
         </div>
       </div>
 
       <div class="game-card" data-genres="accion aventura">
-        <img class="game-cover" src="https://i.imgur.com/1qgsfyQ.png" alt="The Simpsons Hit and Run" loading="lazy" onerror="this.style.display='none'">
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/229280/header.jpg" alt="The Simpsons Hit and Run" loading="lazy" onerror="this.style.display='none'">
         <div class="game-card-body">
           <p class="game-name">The Simpsons: Hit & Run</p>
           <p class="game-desc">GTA pero en Springfield. Manejá por la ciudad, completá misiones y descubrí la conspiración.</p>
@@ -441,17 +439,17 @@
       </div>
 
       <div class="game-card" data-genres="roguelike clicker">
-        <img class="game-cover" src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3948120/3ebd05427181e24a1d791531d0572e596bf31e55/header.jpg?t=1773831686" alt="Scritchy Scratchy" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-cover-placeholder">🎰</div>
         <div class="game-card-body">
           <p class="game-name">Scritchy Scratchy</p>
-          <p class="game-desc">Comprá raspaditas, rascalas y perseguí jackpots enormes. Desbloqueá el Scratch Bot que raspa solo y acumulá mejoras corrida a corrida. ¿Jugás seguro o apostás todo?</p>
+          <p class="game-desc">Comprá tickets de lotería, rascá, hacete millonario, morí, repetí.</p>
           <div class="game-tags"><span class="game-tag">Roguelike</span><span class="game-tag">Clicker</span></div>
           <button class="btn-download" onclick="descargar(this, 'scritchy-scratchy')">⬇ Descargar</button>
         </div>
       </div>
 
       <div class="game-card" data-genres="aventura puzzle estrategia">
-        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/658850/header.jpg" alt="Do Not Feed the Monkeys" loading="lazy" onerror="this.style.display='none'">
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/658510/header.jpg" alt="Do Not Feed the Monkeys" loading="lazy" onerror="this.style.display='none'">
         <div class="game-card-body">
           <p class="game-name">Do Not Feed the Monkeys</p>
           <p class="game-desc">Espiá a desconocidos por cámaras de seguridad. Aprendé sus secretos, pero no interactúes con ellos.</p>
@@ -471,7 +469,7 @@
       </div>
 
       <div class="game-card" data-genres="terror">
-        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/332800/header.jpg" alt="Five Nights at Freddys 2" loading="lazy" onerror="this.style.display='none'">
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/332310/header.jpg" alt="Five Nights at Freddys 2" loading="lazy" onerror="this.style.display='none'">
         <div class="game-card-body">
           <p class="game-name">Five Nights at Freddy's 2</p>
           <p class="game-desc">Más animatrónicos, sin puertas para protegerte. Solo una máscara y tus reflejos.</p>
@@ -491,7 +489,7 @@
       </div>
 
       <div class="game-card" data-genres="estrategia">
-        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/246620/header.jpg" alt="Plague Inc Evolved" loading="lazy" onerror="this.style.display='none'">
+        <img class="game-cover" src="https://cdn.akamai.steamstatic.com/steam/apps/1005040/header.jpg" alt="Plague Inc Evolved" loading="lazy" onerror="this.style.display='none'">
         <div class="game-card-body">
           <p class="game-name">Plague Inc: Evolved</p>
           <p class="game-desc">Evolucioná tu patógeno e infectá al mundo entero antes de que la humanidad encuentre la cura.</p>
@@ -579,8 +577,8 @@
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.090</span>
-    <span class="update-date">🗓 Última actualización: 4 de junio de 2026</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.087</span>
+    <span class="update-date">🗓 Última actualización: 5 de junio de 2026</span>
   </div>
 </div>
 
@@ -647,12 +645,15 @@
     if (data.ok) {
       sessionStorage.setItem("auth_piratas", "ok");
       sessionStorage.setItem("auth_token", data.token);
+      sessionStorage.setItem("auth_nombre", data.nombre || "");
       $("pwd-lock").textContent = "✅";
       btn.textContent = "¡Acceso concedido!";
       btn.classList.add("ok");
       $("pwd-input").disabled = true;
       $("pwd-hint").style.display = "none";
       $("pwd-box").classList.add("correcto");
+      const nombre = data.nombre || "";
+      if (nombre) $("session-label").innerHTML = `Sesión iniciada como <strong style="color:#0b3a75;">${nombre}</strong>`;
       setTimeout(() => {
         $("pwd-overlay").classList.add("saliendo");
         setTimeout(() => $("pwd-overlay").style.display = "none", 600);
@@ -668,7 +669,11 @@
     }
   }
 
-  if (sessionStorage.getItem("auth_piratas") === "ok") $("pwd-overlay").style.display = "none";
+  if (sessionStorage.getItem("auth_piratas") === "ok") {
+    $("pwd-overlay").style.display = "none";
+    const nombre = sessionStorage.getItem("auth_nombre") || "";
+    if (nombre) $("session-label").innerHTML = `Sesión iniciada como <strong style="color:#0b3a75;">${nombre}</strong>`;
+  }
 
   // ── DESCARGA ──
   async function descargar(btn, juego) {
@@ -699,6 +704,7 @@
   function cerrarSesion() {
     sessionStorage.removeItem("auth_piratas");
     sessionStorage.removeItem("auth_token");
+    sessionStorage.removeItem("auth_nombre");
     const ov = $("pwd-overlay"), box = $("pwd-box"), btn = $("pwd-btn");
     ov.classList.remove("saliendo"); box.classList.remove("correcto");
     $("pwd-lock").textContent = "🔒";
