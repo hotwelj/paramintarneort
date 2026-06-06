@@ -803,7 +803,7 @@
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.104</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.105</span>
     <span class="update-date">🗓 Última actualización: 5 de junio de 2026</span>
   </div>
 </div>
@@ -1087,14 +1087,17 @@
       const genreMatch = activeGenre === "todos" || 
                         (activeGenre === "favoritos" ? favs.includes(c.dataset.name) : (c.dataset.genres || "").includes(activeGenre));
       if (nameMatch && genreMatch) {
-        c.style.display = "";
         c.style.opacity = "1";
-        c.style.transform = "";
+        c.style.transform = "scale(1)";
+        c.style.pointerEvents = "";
+        c.style.position = "";
+        c.style.visibility = "visible";
         visible++;
       } else {
         c.style.opacity = "0";
-        c.style.transform = "scale(0.95)";
-        setTimeout(() => { if (c.style.opacity === "0") c.style.display = "none"; }, 180);
+        c.style.transform = "scale(0.92)";
+        c.style.pointerEvents = "none";
+        c.style.visibility = "hidden";
       }
     });
     $("noResults").style.display = visible === 0 ? "block" : "none";
@@ -1103,7 +1106,10 @@
   function filterGenre(genre, btn) {
     activeGenre = genre;
     document.querySelectorAll(".genre-btn").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active"); filterGames();
+    btn.classList.add("active");
+    // Reset any cards that were hard-hidden
+    document.querySelectorAll(".game-card").forEach(c => { c.style.display = ""; });
+    filterGames();
   }
 
   // ── MODAL ──
