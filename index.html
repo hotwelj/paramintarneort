@@ -803,7 +803,7 @@
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.105</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.106</span>
     <span class="update-date">🗓 Última actualización: 5 de junio de 2026</span>
   </div>
 </div>
@@ -1081,34 +1081,51 @@
 
   function filterGames() {
     const q = $("searchInput").value.toLowerCase();
+    const cards = document.querySelectorAll(".game-card");
     let visible = 0;
-    document.querySelectorAll(".game-card").forEach(c => {
-      const nameMatch = c.dataset.name?.toLowerCase().includes(q);
-      const genreMatch = activeGenre === "todos" || 
-                        (activeGenre === "favoritos" ? favs.includes(c.dataset.name) : (c.dataset.genres || "").includes(activeGenre));
-      if (nameMatch && genreMatch) {
-        c.style.opacity = "1";
-        c.style.transform = "scale(1)";
-        c.style.pointerEvents = "";
-        c.style.position = "";
-        c.style.visibility = "visible";
-        visible++;
-      } else {
-        c.style.opacity = "0";
-        c.style.transform = "scale(0.92)";
-        c.style.pointerEvents = "none";
-        c.style.visibility = "hidden";
-      }
+
+    // Paso 1: fade out todo
+    cards.forEach(c => {
+      c.style.transition = "opacity 0.15s ease, transform 0.15s ease";
+      c.style.opacity = "0";
+      c.style.transform = "scale(0.93)";
     });
-    $("noResults").style.display = visible === 0 ? "block" : "none";
+
+    // Paso 2: reorganizar grid y fade in los que matchean
+    setTimeout(() => {
+      cards.forEach(c => {
+        const nameMatch = c.dataset.name?.toLowerCase().includes(q);
+        const genreMatch = activeGenre === "todos" ||
+          (activeGenre === "favoritos" ? favs.includes(c.dataset.name) : (c.dataset.genres || "").includes(activeGenre));
+        if (nameMatch && genreMatch) {
+          c.style.display = "";
+          visible++;
+        } else {
+          c.style.display = "none";
+        }
+      });
+      $("noResults").style.display = visible === 0 ? "block" : "none";
+
+      // Paso 3: fade in los visibles con stagger
+      let i = 0;
+      cards.forEach(c => {
+        if (c.style.display !== "none") {
+          const delay = i * 30;
+          setTimeout(() => {
+            c.style.transition = "opacity 0.2s ease, transform 0.2s ease";
+            c.style.opacity = "1";
+            c.style.transform = "scale(1)";
+          }, delay);
+          i++;
+        }
+      });
+    }, 160);
   }
 
   function filterGenre(genre, btn) {
     activeGenre = genre;
     document.querySelectorAll(".genre-btn").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
-    // Reset any cards that were hard-hidden
-    document.querySelectorAll(".game-card").forEach(c => { c.style.display = ""; });
     filterGames();
   }
 
