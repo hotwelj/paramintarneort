@@ -818,7 +818,7 @@
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.111</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.112</span>
   </div>
 </div>
 
@@ -949,6 +949,8 @@
     $("pwd-overlay").style.display = "none";
     const nombre = sessionStorage.getItem("auth_nombre") || "";
     if (nombre) $("session-label").innerHTML = `Sesión iniciada como <strong style="color:#0b3a75;">${nombre}</strong>`;
+    favs = JSON.parse(localStorage.getItem(getFavsKey()) || "[]");
+    cargarFavsServidor();
   }
 
   // ── DESCARGA ──
