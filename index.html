@@ -802,7 +802,7 @@
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.116</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.117</span>
   </div>
 </div>
 
@@ -984,10 +984,10 @@
 
   // ── JUEGOS ──
   function getFavsKey() { return "favs_" + (sessionStorage.getItem("auth_nombre") || "guest"); }
-  let favs = JSON.parse(localStorage.getItem(getFavsKey()) || "[]");
-  let activeGenre = "todos";
-  let activeView = "grid";
-  let modalDlKey = "";
+  var favs = JSON.parse(localStorage.getItem(getFavsKey()) || "[]");
+  var activeGenre = "todos";
+  var activeView = "grid";
+  var modalDlKey = "";
 
   function saveFavs() { localStorage.setItem(getFavsKey(), JSON.stringify(favs)); }
 
@@ -1184,7 +1184,7 @@
     setTimeout(() => { c.style.animationDelay = "0ms"; }, (i * 40) + 400);
   });
   const totalGames = document.querySelectorAll(".game-card").length;
-  let count = 0;
+  var count = 0;
   const counterInterval = setInterval(() => {
     count += 1;
     if (count >= totalGames) { count = totalGames; clearInterval(counterInterval); }
