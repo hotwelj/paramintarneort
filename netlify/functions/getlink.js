@@ -34,6 +34,7 @@ const LINKS = {
   "getting-over-it":        "https://github.com/hotwelj/juegosort/releases/download/Getting-over-it/Getting.Over.It.with.Bennett.Foddy.v1.7.zip",
   "fortune-mill":           "https://github.com/hotwelj/juegosort/releases/download/Fortune-mill/Fortune.Mill.v2026.06.03.zip",
   "eaglercraft":            "https://github.com/hotwelj/juegosort/releases/download/Eaglercraft/EaglercraftX_1.8_Signed_Offline.zip",
+  "minecraft":              "https://github.com/hotwelj/juegosort/releases/download/Minecraft/Minecraft.v1.19.1.1.zip",
 };
 
 exports.handler = async (event) => {
