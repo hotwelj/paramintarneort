@@ -129,6 +129,7 @@
     .games-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:16px; margin-top:10px; }
     .game-card { background:var(--bg-game-card); border:1px solid var(--border-card); border-radius:10px; overflow:hidden; display:flex; flex-direction:column; align-items:center; gap:6px; transition:background 0.3s; }
     .game-cover { width:100%; height:94px; object-fit:cover; object-position:center; display:block; }
+    .game-cover.cover-contain { object-fit:contain; background:var(--border-card); padding:8px; box-sizing:border-box; }
     .game-cover-placeholder { width:100%; height:94px; background:var(--border-card); display:flex; align-items:center; justify-content:center; font-size:28px; }
     .game-card-body { padding:10px 14px 14px; display:flex; flex-direction:column; align-items:center; gap:6px; width:100%; }
     .game-name { font-weight:bold; font-size:15px; color:#3b82f6; margin:0; }
@@ -166,6 +167,7 @@
     .games-grid.list-view { grid-template-columns:1fr; }
     .games-grid.list-view .game-card { flex-direction:row; align-items:stretch; }
     .games-grid.list-view .game-cover { width:120px; height:auto; flex-shrink:0; object-fit:cover; }
+    .games-grid.list-view .game-cover.cover-contain { object-fit:contain; }
     .games-grid.list-view .game-cover-placeholder { width:120px; height:auto; flex-shrink:0; }
     .games-grid.list-view .game-card-body { text-align:left; align-items:flex-start; flex:1; }
     .games-grid.list-view .game-tags { justify-content:flex-start; }
@@ -840,7 +842,7 @@
         </div>
       </div>
       <div class="game-card" onclick="abrirModal(this)" data-name='Minecraft 1.8 (Eaglercraft)' data-desc='Es un puerto no oficial de Minecraft Java Edition 1.8 que corre 100% en el navegador, sin descargar ni instalar el juego original. Tiene soporte para multijugador (servidores), modo un jugador con guardado local, soporte para resource packs y shaders básicos, e incluso voice chat integrado. La idea es la misma experiencia clásica de Minecraft 1.8 — minería, construcción, supervivencia — pero accesible desde cualquier compu con un navegador moderno, ideal para jugar en lugares donde no podés instalar programas (como una compu del cole).' data-img='/images/eaglercraft.png' data-dl='eaglercraft' data-genres="aventura sandbox">
-        <img class="game-cover" src="/images/eaglercraft.png" alt="Minecraft 1.8 (Eaglercraft)" loading="lazy" onerror="this.style.display='none'">
+        <img class="game-cover cover-contain" src="/images/eaglercraft.png" alt="Minecraft 1.8 (Eaglercraft)" loading="lazy" onerror="this.style.display='none'">
         <div class="game-card-body">
           <p class="game-name">Minecraft 1.8 (Eaglercraft)</p>
           <p class="game-desc">El Minecraft de toda la vida pero corriendo directo en el navegador, sin instalar nada.</p>
