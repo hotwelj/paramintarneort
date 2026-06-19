@@ -50,14 +50,6 @@
     <div class="nav">
       <a href="index.html">Home</a>
       <a href="sugerencias.html">Sugerencias</a>
-      <div class="dropdown" id="dropdown-webs">
-        <button class="dropdown-btn" onclick="toggleDropdown('dropdown-webs')">Webs principales <span class="arrow">▼</span></button>
-        <div class="dropdown-menu">
-          <a href="https://fitgirl-repacks.site/" target="_blank">Fitgirl</a>
-          <a href="https://steamunlocked.org/" target="_blank">Steam Unlocked</a>
-          <a href="https://crotorrents.com/" target="_blank">Crotorrents</a>
-        </div>
-      </div>
       <div class="dropdown" id="dropdown-chrome">
         <button class="dropdown-btn" onclick="toggleDropdown('dropdown-chrome')">Extensiones Chrome <span class="arrow">▼</span></button>
         <div class="dropdown-menu">
@@ -597,7 +589,43 @@
         </div>
         </div>
       </div>
-      <div class="game-card" onclick="abrirModal(this)" data-name='Minecraft TLauncher' data-desc='Esta es la versión 1.19.1 de Minecraft Java Edition, parte de la 'Wild Update'. Trae el bioma de pantano de manglares con sus árboles y bloques de barro, ranas y renacuajos que sueltan froglight, y la temible zona Deep Dark con ciudades antiguas custodiadas por el Warden, un mob que detecta vibraciones y es prácticamente imposible de matar al principio del juego. La versión 1.19.1 además agrega mejoras de chat seguro y arregla varios bugs de la 1.19 base. Es Minecraft de toda la vida: minar, construir, sobrevivir y explorar, ahora con más peligro y más cosas para descubrir bajo tierra.' data-img='/images/minecraft.png' data-dl='minecraft' data-genres="aventura sandbox">
+      <div class="game-card" onclick="abrirModal(this)" data-name='Vampire Survivors' data-desc='Sobrevivís en hordas cada vez más grandes de enemigos mientras tus armas disparan solas a tu alrededor. Subís de nivel, elegís mejoras al instante y vas armando combos absurdos hasta llenar la pantalla de efectos. Partidas de 20-30 minutos, fácil de entender, durísimo de soltar.' data-img='/images/vampiresurvivors.png' data-dl='vampire-survivors' data-genres="roguelike accion">
+        <img class="game-cover" src="/images/vampiresurvivors.png" alt="Vampire Survivors" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <p class="game-name">Vampire Survivors</p>
+          <p class="game-desc">Sobrevivís en hordas cada vez más grandes de enemigos mientras tus armas disparan solas a tu alrededor. Subís de nivel, elegís mejoras al instante y vas armando combos absurdos hasta llenar la pantalla de efectos. Partidas de 20-30 minutos, fácil de entender, durísimo de soltar.</p>
+          <div class="game-tags"><span class="game-tag">Roguelike</span><span class="game-tag">Acción</span></div>
+          <div class="card-actions">
+          <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'vampire-survivors')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
+        </div>
+      </div>
+      <div class="game-card" onclick="abrirModal(this)" data-name='OneShot' data-desc='Acompañás a Niko, que tiene que devolver el sol a un mundo que se está apagando. Es un juego narrativo corto con puzzles tranquilos y una conexión rara entre el personaje y quien está jugando: el juego sabe que vos también estás ahí del otro lado de la pantalla.' data-img='/images/oneshot.jpg' data-dl='oneshot' data-genres="aventura indie">
+        <img class="game-cover" src="/images/oneshot.jpg" alt="OneShot" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <p class="game-name">OneShot</p>
+          <p class="game-desc">Acompañás a Niko, que tiene que devolver el sol a un mundo que se está apagando. Es un juego narrativo corto con puzzles tranquilos y una conexión rara entre el personaje y quien está jugando: el juego sabe que vos también estás ahí del otro lado de la pantalla.</p>
+          <div class="game-tags"><span class="game-tag">Aventura</span><span class="game-tag">Indie</span></div>
+          <div class="card-actions">
+          <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'oneshot')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
+        </div>
+      </div>
+      <div class="game-card" onclick="abrirModal(this)" data-name='A Short Hike' data-desc='Sos un pájaro explorando una isla tranquila, subiendo una montaña sin apuro. Volás, escalás, pescás y charlás con los personajes que te cruzás en el camino. Dura un par de horas y te deja una sensación rara de paz que pocos juegos logran.' data-img='/images/ashorthike.png' data-dl='a-short-hike' data-genres="aventura indie">
+        <img class="game-cover" src="/images/ashorthike.png" alt="A Short Hike" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <p class="game-name">A Short Hike</p>
+          <p class="game-desc">Sos un pájaro explorando una isla tranquila, subiendo una montaña sin apuro. Volás, escalás, pescás y charlás con los personajes que te cruzás en el camino. Dura un par de horas y te deja una sensación rara de paz que pocos juegos logran.</p>
+          <div class="game-tags"><span class="game-tag">Aventura</span><span class="game-tag">Indie</span></div>
+          <div class="card-actions">
+          <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'a-short-hike')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
+        </div>
+      </div>
+      <div class="game-card" onclick="abrirModal(this)" data-name='Minecraft TLauncher' data-desc='Esta es la versión 1.19.1 de Minecraft Java Edition, parte de la &#39;Wild Update&#39;. Trae el bioma de pantano de manglares con sus árboles y bloques de barro, ranas y renacuajos que sueltan froglight, y la temible zona Deep Dark con ciudades antiguas custodiadas por el Warden, un mob que detecta vibraciones y es prácticamente imposible de matar al principio del juego. La versión 1.19.1 además agrega mejoras de chat seguro y arregla varios bugs de la 1.19 base. Es Minecraft de toda la vida: minar, construir, sobrevivir y explorar, ahora con más peligro y más cosas para descubrir bajo tierra.' data-img='/images/minecraft.png' data-dl='minecraft' data-genres="aventura sandbox">
         <img class="game-cover" src="/images/minecraft.png" alt="Minecraft TLauncher" loading="lazy" onerror="this.style.display='none'">
         <div class="game-card-body">
           <p class="game-name">Minecraft TLauncher</p>
@@ -652,7 +680,7 @@
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.139</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.141</span>
   </div>
 </div>
 
