@@ -669,6 +669,19 @@
         <button id="modal-download" onclick="descargarDesdeModal()">⬇ Descargar</button>
         <button id="modal-fav" onclick="toggleFavModal()">🤍</button>
       </div>
+      <div class="game-card" onclick="abrirModal(this)" data-name='DOOM 64' data-desc='El clásico shooter de id Software en versión Nintendo 64. Más oscuro y atmosférico que el original, con niveles exclusivos y una historia nueva.' data-img='/images/doom64.png' data-dl='doom-64' data-weight-class='weight-liviano' data-weight-label='🪶 Liviano' data-genres="accion terror">
+        <img class="game-cover" src="/images/doom64.png" alt="DOOM 64" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <div class="game-name-row"><p class="game-name">DOOM 64</p><span class="weight-tag weight-liviano">🪶 Liviano</span></div>
+          <p class="game-desc">El clásico shooter de id Software en versión Nintendo 64. Más oscuro y atmosférico que el original, con niveles exclusivos y una historia nueva.</p>
+          <div class="game-tags"><span class="game-tag">Acción</span><span class="game-tag">Terror</span></div>
+          <div class="card-actions">
+          <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'doom-64')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -688,7 +701,7 @@
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.146</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.147</span>
   </div>
 </div>
 
