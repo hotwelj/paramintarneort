@@ -39,8 +39,15 @@ const LINKS = {
   "a-short-hike":           "https://github.com/hotwelj/paramintarneort/releases/download/A-short-hike/A.Short.Hike.v1.8.14.zip",
   "passpartout":            "https://github.com/hotwelj/paramintarneort/releases/download/Passpartout-The-Starving-Artist/Passpartout.The.Starving.Artist.v1.7.5.zip",
   "doom-64":                "https://github.com/hotwelj/paramintarneort/releases/download/DOOM-64/DOOM.64.zip",
-  "gta-vice-city":          "https://github.com/hotwelj/paramintarneort/releases/download/GTA-vice-city/GrandTheftAuto-ViceCity.zip",
   "super-10-pin":           "https://github.com/hotwelj/paramintarneort/releases/download/Super-10-pin/Super.10.Pin.v1.083.zip",
+  "gta-3":                  "https://github.com/hotwelj/paramintarneort/releases/download/GTA-3/GrandTheftAutoIII.zip",
+  "mafia":                  "https://github.com/hotwelj/paramintarneort/releases/download/MAFIA/Mafia.zip",
+  "limbo":                  "https://github.com/hotwelj/paramintarneort/releases/download/LIMBO/LIMBO.v2025.05.29.zip",
+  "shovel-knight-dig":      "https://github.com/hotwelj/paramintarneort/releases/download/Shovel-Knight-Dig/Shovel.Knight.Dig.v2.0.2.zip",
+  "deltarune":              "https://github.com/hotwelj/paramintarneort/releases/download/Deltarune/DELTARUNE.Chapter.5.zip",
+  "hotline-miami":          "https://github.com/hotwelj/paramintarneort/releases/download/Hotline-miami/Hotline.Miami.v2015.10.09.zip",
+  "fez":                    "https://github.com/hotwelj/paramintarneort/releases/download/FEZ/FEZ.v1.12.zip",
+  "half-life":              "https://github.com/hotwelj/paramintarneort/releases/download/Half-life/Half.Life.v2023.12.01.zip",
 };
 
 exports.handler = async (event) => {
