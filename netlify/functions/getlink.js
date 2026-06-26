@@ -48,6 +48,7 @@ const LINKS = {
   "hotline-miami":          "https://github.com/hotwelj/paramintarneort/releases/download/Hotline-miami/Hotline.Miami.v2015.10.09.zip",
   "fez":                    "https://github.com/hotwelj/paramintarneort/releases/download/FEZ/FEZ.v1.12.zip",
   "half-life":              "https://github.com/hotwelj/paramintarneort/releases/download/Half-life/Half.Life.v2023.12.01.zip",
+  "katana-zero":            "https://github.com/hotwelj/paramintarneort/releases/download/Katana-zero/Katana.ZERO.v1.0.5.zip",
 };
 
 exports.handler = async (event) => {
