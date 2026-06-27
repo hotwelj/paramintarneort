@@ -336,7 +336,7 @@ textarea { min-height:110px; }
     $("pwd-input").disabled = true;
     $("pwd-error").style.display = "none";
 
-    const res = await fetch("/.netlify/functions/auth", {
+    const res = await fetch("https://ort-auth.simonabulafia.workers.dev", {
       method: "POST",
       body: JSON.stringify({ password: val })
     });
