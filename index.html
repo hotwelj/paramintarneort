@@ -1429,7 +1429,7 @@
       this.textContent = "+ Agregar"; this.disabled = false;
       if (data.ok) {
         msg.style.color="#22c55e";
-        msg.textContent = `✅ Usuario agregado como ${data.userId}. Recordá actualizar USER_NAMES en Cloudflare.`;
+        msg.textContent = `✅ Usuario agregado correctamente.`;
         msg.style.display="block";
         overlay.querySelector("#admin-pwd-new").value = "";
         cargarUsuarios();
