@@ -836,7 +836,7 @@
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.154</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.155</span>
   </div>
 </div>
 
@@ -1355,24 +1355,48 @@
           <button onclick="document.getElementById('admin-panel-overlay').remove()" style="background:#334155;color:#94a3b8;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;">✕ Cerrar</button>
         </div>
 
-        <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:20px;margin-bottom:20px;">
-          <h2 style="color:#94a3b8;font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px;">Agregar contraseña</h2>
-          <div style="display:flex;gap:10px;flex-wrap:wrap;">
-            <input id="admin-pwd-new" type="text" placeholder="Contraseña nueva" style="flex:1;min-width:200px;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:10px 14px;color:#f1f5f9;font-size:14px;outline:none;">
-            <button id="admin-add-btn" style="background:#3b82f6;color:white;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;font-weight:600;font-size:14px;">+ Agregar</button>
-          </div>
-          <p id="admin-add-msg" style="margin-top:10px;font-size:13px;color:#22c55e;display:none;"></p>
+        <div style="display:flex;gap:8px;margin-bottom:20px;">
+          <button id="tab-contras" onclick="switchTab('contras')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#3b82f6;color:white;">🔑 Contraseñas</button>
+          <button id="tab-sugerencias" onclick="switchTab('sugerencias')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#1e293b;color:#94a3b8;">💬 Sugerencias</button>
         </div>
 
-        <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:20px;">
-          <h2 style="color:#94a3b8;font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px;">Usuarios registrados</h2>
-          <div id="admin-user-list" style="color:#94a3b8;font-size:14px;">Cargando...</div>
+        <div id="panel-contras">
+          <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:20px;margin-bottom:20px;">
+            <h2 style="color:#94a3b8;font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px;">Agregar contraseña</h2>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <input id="admin-pwd-new" type="text" placeholder="Contraseña nueva" style="flex:1;min-width:200px;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:10px 14px;color:#f1f5f9;font-size:14px;outline:none;">
+              <button id="admin-add-btn" style="background:#3b82f6;color:white;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;font-weight:600;font-size:14px;">+ Agregar</button>
+            </div>
+            <p id="admin-add-msg" style="margin-top:10px;font-size:13px;color:#22c55e;display:none;"></p>
+          </div>
+          <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:20px;">
+            <h2 style="color:#94a3b8;font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px;">Usuarios registrados</h2>
+            <div id="admin-user-list" style="color:#94a3b8;font-size:14px;">Cargando...</div>
+          </div>
+        </div>
+
+        <div id="panel-sugerencias" style="display:none;">
+          <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:20px;">
+            <h2 style="color:#94a3b8;font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px;">Sugerencias recibidas</h2>
+            <div id="admin-sug-list" style="color:#94a3b8;font-size:14px;">Cargando...</div>
+          </div>
         </div>
       </div>
     `;
 
     overlay.id = "admin-panel-overlay";
     document.body.appendChild(overlay);
+
+    // Cambiar tab
+    window.switchTab = function(tab) {
+      overlay.querySelector("#panel-contras").style.display = tab === "contras" ? "block" : "none";
+      overlay.querySelector("#panel-sugerencias").style.display = tab === "sugerencias" ? "block" : "none";
+      overlay.querySelector("#tab-contras").style.background = tab === "contras" ? "#3b82f6" : "#1e293b";
+      overlay.querySelector("#tab-contras").style.color = tab === "contras" ? "white" : "#94a3b8";
+      overlay.querySelector("#tab-sugerencias").style.background = tab === "sugerencias" ? "#3b82f6" : "#1e293b";
+      overlay.querySelector("#tab-sugerencias").style.color = tab === "sugerencias" ? "white" : "#94a3b8";
+      if (tab === "sugerencias") cargarSugerencias();
+    };
 
     // Cargar usuarios
     async function cargarUsuarios() {
@@ -1401,17 +1425,77 @@
       }
     }
 
+    // Cargar sugerencias
+    async function cargarSugerencias() {
+      const list = overlay.querySelector("#admin-sug-list");
+      list.textContent = "Cargando...";
+      try {
+        const res = await fetch(ADMIN_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "list_suggestions", adminToken }),
+        });
+        const data = await res.json();
+        if (!data.ok) { list.textContent = "Error al cargar."; return; }
+        if (!data.sugerencias.length) { list.textContent = "No hay sugerencias."; return; }
+        list.innerHTML = data.sugerencias.map(s => {
+          const fecha = s.fecha ? new Date(s.fecha).toLocaleString("es-AR") : "";
+          const tipo = s.tipo === "otro" ? (s.tipoOtro || "Otro") : s.tipo;
+          return `
+          <div style="background:#0f172a;border:1px solid ${s.leida ? '#1e293b' : '#3b82f6'};border-radius:10px;padding:14px;margin-bottom:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+              <div>
+                <span style="color:#f1f5f9;font-weight:600;">${s.usuario || '—'}</span>
+                <span style="color:#64748b;font-size:12px;margin-left:8px;">${tipo}</span>
+                ${!s.leida ? '<span style="background:#1d4ed8;color:#93c5fd;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:8px;">Nueva</span>' : ''}
+              </div>
+              <span style="color:#475569;font-size:12px;">${fecha}</span>
+            </div>
+            <p style="color:#cbd5e1;font-size:14px;margin:0 0 10px;">${s.mensaje}</p>
+            <div style="display:flex;gap:8px;">
+              ${!s.leida ? `<button onclick="marcarLeida('${s.id}', this)" style="background:#1e3a5f;color:#93c5fd;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px;">✓ Marcar leída</button>` : ''}
+              <button onclick="eliminarSugerencia('${s.id}', this)" style="background:#7f1d1d;color:#fca5a5;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px;">Eliminar</button>
+            </div>
+          </div>`;
+        }).join("");
+      } catch(e) {
+        list.textContent = "Error: " + e.message;
+      }
+    }
+
     // Eliminar usuario
     window.eliminarUsuario = async function(hash, btn) {
       if (!confirm("¿Eliminar este usuario?")) return;
-      btn.textContent = "...";
-      btn.disabled = true;
+      btn.textContent = "..."; btn.disabled = true;
       await fetch(ADMIN_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "delete_user", adminToken, hash }),
       });
       cargarUsuarios();
+    };
+
+    // Marcar sugerencia como leída
+    window.marcarLeida = async function(id, btn) {
+      btn.textContent = "..."; btn.disabled = true;
+      await fetch(ADMIN_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "mark_read", adminToken, id }),
+      });
+      cargarSugerencias();
+    };
+
+    // Eliminar sugerencia
+    window.eliminarSugerencia = async function(id, btn) {
+      if (!confirm("¿Eliminar esta sugerencia?")) return;
+      btn.textContent = "..."; btn.disabled = true;
+      await fetch(ADMIN_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "delete_suggestion", adminToken, id }),
+      });
+      cargarSugerencias();
     };
 
     // Agregar usuario

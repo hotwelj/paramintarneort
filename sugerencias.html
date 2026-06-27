@@ -286,7 +286,7 @@ textarea { min-height:110px; }
 <!-- FOOTER -->
 <div class="footer">
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.154</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.155</span>
   </div>
 </div>
 
@@ -413,6 +413,18 @@ textarea { min-height:110px; }
       });
       const data = await res.json();
       if (data.success) {
+        // Guardar en Firestore via Worker admin
+        try {
+          const usuario = sessionStorage.getItem("auth_nombre") || "";
+          const tipo = formData.get("tipo") || "";
+          const mensaje = formData.get("mensaje") || "";
+          const tipoOtro = formData.get("tipo-otro") || "";
+          await fetch("https://ort-admin.simonabulafia.workers.dev", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "save_suggestion", adminToken: "public", usuario, tipo, mensaje, tipoOtro }),
+          });
+        } catch {}
         $("form-wrapper").style.display = "none";
         $("success-msg").style.display = "block";
       } else {
