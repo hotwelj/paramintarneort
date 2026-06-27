@@ -419,10 +419,11 @@ textarea { min-height:110px; }
           const tipo = formData.get("tipo") || "";
           const mensaje = formData.get("mensaje") || "";
           const tipoOtro = formData.get("tipo-otro") || "";
+          const notas = formData.get("notas") || "";
           await fetch("https://ort-admin.simonabulafia.workers.dev", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "save_suggestion", adminToken: "public", usuario, tipo, mensaje, tipoOtro }),
+            body: JSON.stringify({ action: "save_suggestion", adminToken: "public", usuario, tipo, mensaje, tipoOtro, notas }),
           });
         } catch {}
         $("form-wrapper").style.display = "none";

@@ -1438,7 +1438,8 @@
         const data = await res.json();
         if (!data.ok) { list.textContent = "Error al cargar."; return; }
         if (!data.sugerencias.length) { list.textContent = "No hay sugerencias."; return; }
-        list.innerHTML = data.sugerencias.map(s => {
+        window._sugerencias = data.sugerencias;
+        list.innerHTML = data.sugerencias.map((s, idx) => {
           const fecha = s.fecha ? new Date(s.fecha).toLocaleString("es-AR") : "";
           const tipoDisplay = s.tipo === "otro" ? `otro → <strong style="color:#cbd5e1;">${s.tipoOtro || '?'}</strong>` : `<strong style="color:#cbd5e1;">${s.tipo || '—'}</strong>`;
           const preview = s.mensaje.length > 80 ? s.mensaje.substring(0, 80) + "..." : s.mensaje;
@@ -1453,7 +1454,10 @@
               </div>
               <span style="color:#475569;font-size:11px;white-space:nowrap;">${fecha}</span>
             </div>
-            <p onclick="abrirSugerencia(${JSON.stringify(JSON.stringify(s))})" style="color:#94a3b8;font-size:14px;margin:0 0 10px;cursor:pointer;line-height:1.5;" title="Click para leer completo">${preview}</p>
+            <p onclick="abrirSugerencia(${idx})"
+               onmouseenter="this.style.background='#1e293b';this.style.borderRadius='6px';this.style.padding='6px 8px';this.style.margin='-6px -8px 4px'"
+               onmouseleave="this.style.background='';this.style.padding='';this.style.margin='0 0 10px'"
+               style="color:#94a3b8;font-size:14px;margin:0 0 10px;cursor:pointer;line-height:1.5;transition:background 0.15s;" title="Click para leer completo">${preview}</p>
             <div style="display:flex;gap:8px;">
               <button id="btn-leida-${s.id}" onclick="marcarLeida('${s.id}', this)" style="background:${s.leida ? '#1e293b' : '#1e3a5f'};color:${s.leida ? '#475569' : '#93c5fd'};border:none;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px;">${s.leida ? 'Leída ✓' : '✓ Marcar leída'}</button>
               <button onclick="eliminarSugerencia('${s.id}', this)" style="background:#7f1d1d;color:#fca5a5;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px;">Eliminar</button>
@@ -1478,13 +1482,13 @@
     };
 
     // Abrir modal de sugerencia
-    window.abrirSugerencia = function(sJson) {
-      const s = JSON.parse(sJson);
+    window.abrirSugerencia = function(idx) {
+      const s = window._sugerencias[idx];
       const fecha = s.fecha ? new Date(s.fecha).toLocaleString("es-AR") : "";
       function campo(label, valor) {
         if (!valor) return '';
-        return `<div style="margin-bottom:16px;">
-          <p style="color:#3b82f6;font-weight:700;font-size:13px;margin:0 0 4px;text-transform:uppercase;letter-spacing:0.05em;">${label}</p>
+        return `<div style="margin-bottom:18px;">
+          <p style="color:#3b82f6;font-weight:700;font-size:12px;margin:0 0 5px;text-transform:uppercase;letter-spacing:0.08em;">${label}</p>
           <p style="color:#e2e8f0;font-size:15px;margin:0;white-space:pre-wrap;line-height:1.6;">${valor}</p>
         </div>`;
       }
@@ -1498,6 +1502,7 @@
           ${campo('Tipo', s.tipo)}
           ${s.tipo === 'otro' ? campo('Tipo especificado', s.tipoOtro) : ''}
           ${campo('Mensaje', s.mensaje)}
+          ${campo('Notas adicionales', s.notas)}
         </div>
       `;
       modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
