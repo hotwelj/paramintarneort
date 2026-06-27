@@ -794,6 +794,18 @@
         </div>
         </div>
       </div>
+      <div class="game-card" onclick="abrirModal(this)" data-name='HaxBall Client' data-desc='Cliente de HaxBall basado en Chromium. Instalalo y jugá HaxBall aunque esté bloqueado en tu red. Más fluido que el navegador normal.' data-img='/images/haxball.png' data-dl='haxball' data-weight-class='weight-liviano' data-weight-label='🪶 Liviano · 163MB' data-genres="accion simulacion">
+        <img class="game-cover" src="/images/haxball.png" alt="HaxBall Client" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <div class="game-name-row"><p class="game-name">HaxBall Client</p><span class="weight-tag weight-liviano">🪶 Liviano · 163MB</span></div>
+          <p class="game-desc">Cliente de HaxBall basado en Chromium. Instalalo y jugá HaxBall aunque esté bloqueado en tu red. Más fluido que el navegador normal.</p>
+          <div class="game-tags"><span class="game-tag">Acción</span><span class="game-tag">Simulación</span></div>
+          <div class="card-actions">
+          <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'haxball')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -836,7 +848,7 @@
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.156</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.157</span>
   </div>
 </div>
 
