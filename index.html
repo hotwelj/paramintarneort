@@ -814,7 +814,7 @@
       </div>
       <div style="margin-bottom:16px;"></div>
       <div id="modal-actions">
-        <button id="modal-download" onclick="descargarDesdeModal()">⬇ Descargar</button>
+        <button id="modal-download" class="btn-download" onclick="descargarDesdeModal()">⬇ Descargar</button>
         <button id="modal-fav" onclick="toggleFavModal()">🤍</button>
       </div>
     </div>
@@ -836,7 +836,7 @@
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.152</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.153</span>
   </div>
 </div>
 
@@ -924,7 +924,7 @@
     $("pwd-input").disabled = true;
     $("pwd-error").style.display = "none";
 
-    const res = await fetch("/.netlify/functions/auth", {
+    const res = await fetch("https://ort-auth.simonabulafia.workers.dev", {
       method: "POST",
       body: JSON.stringify({ password: val })
     });
@@ -976,7 +976,7 @@
     btn.classList.add("descargando");
     btn.disabled = true;
     try {
-      const res = await fetch("/.netlify/functions/getlink", {
+      const res = await fetch("https://ort-getlink.simonabulafia.workers.dev", {
         method: "POST",
         body: JSON.stringify({ token, juego })
       });
