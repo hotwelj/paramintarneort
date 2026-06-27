@@ -49,6 +49,7 @@ const LINKS = {
   "fez":                    "https://github.com/hotwelj/paramintarneort/releases/download/FEZ/FEZ.v1.12.zip",
   "half-life":              "https://github.com/hotwelj/paramintarneort/releases/download/Half-life/Half.Life.v2023.12.01.zip",
   "katana-zero":            "https://github.com/hotwelj/paramintarneort/releases/download/Katana-zero/Katana.ZERO.v1.0.5.zip",
+  "trolley-problem-inc":    "https://github.com/hotwelj/paramintarneort/releases/download/Trolley-problem-inc/Trolley.Problem.Inc.zip",
 };
 
 exports.handler = async (event) => {
