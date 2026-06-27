@@ -1441,24 +1441,24 @@
         window._sugerencias = data.sugerencias;
         list.innerHTML = data.sugerencias.map((s, idx) => {
           const fecha = s.fecha ? new Date(s.fecha).toLocaleString("es-AR") : "";
-          const tipoDisplay = s.tipo === "otro" ? `otro → <strong style="color:#cbd5e1;">${s.tipoOtro || '?'}</strong>` : `<strong style="color:#cbd5e1;">${s.tipo || '—'}</strong>`;
-          const preview = s.mensaje.length > 80 ? s.mensaje.substring(0, 80) + "..." : s.mensaje;
+          const tipoDisplay = s.tipo === "otro" ? `otro → ${s.tipoOtro || '?'}` : (s.tipo || '—');
           return `
-          <div style="background:#0f172a;border:1px solid ${s.leida ? '#1e293b' : '#3b82f6'};border-radius:10px;padding:14px;margin-bottom:10px;">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
-              <div>
+          <div onclick="abrirSugerencia(${idx})" style="background:#0f172a;border:1px solid ${s.leida ? '#1e293b' : '#3b82f6'};border-radius:10px;padding:16px;margin-bottom:10px;cursor:pointer;transition:box-shadow 0.15s,border-color 0.15s;"
+            onmouseenter="this.style.boxShadow='0 4px 20px rgba(59,130,246,0.2)';this.style.borderColor='${s.leida ? '#475569' : '#60a5fa'}'"
+            onmouseleave="this.style.boxShadow='';this.style.borderColor='${s.leida ? '#1e293b' : '#3b82f6'}'">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
                 <span style="color:#f1f5f9;font-weight:700;">${s.usuario || '—'}</span>
-                <span style="color:#64748b;font-size:12px;margin-left:6px;">·</span>
-                <span style="color:#94a3b8;font-size:13px;margin-left:6px;">Tipo: ${tipoDisplay}</span>
-                ${!s.leida ? '<span style="background:#1d4ed8;color:#93c5fd;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:8px;">Nueva</span>' : '<span style="background:#1e293b;color:#475569;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:8px;">Leída</span>'}
+                ${!s.leida ? '<span style="background:#1d4ed8;color:#93c5fd;font-size:11px;padding:2px 8px;border-radius:20px;">Nueva</span>' : '<span style="background:#1e293b;color:#475569;font-size:11px;padding:2px 8px;border-radius:20px;">Leída</span>'}
               </div>
               <span style="color:#475569;font-size:11px;white-space:nowrap;">${fecha}</span>
             </div>
-            <p onclick="abrirSugerencia(${idx})"
-               onmouseenter="this.style.background='#1e293b';this.style.borderRadius='6px';this.style.padding='6px 8px';this.style.margin='-6px -8px 4px'"
-               onmouseleave="this.style.background='';this.style.padding='';this.style.margin='0 0 10px'"
-               style="color:#94a3b8;font-size:14px;margin:0 0 10px;cursor:pointer;line-height:1.5;transition:background 0.15s;" title="Click para leer completo">${preview}</p>
-            <div style="display:flex;gap:8px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+              <div><span style="color:#3b82f6;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Tipo</span><p style="color:#cbd5e1;font-size:13px;margin:2px 0 0;">${tipoDisplay}</p></div>
+              <div><span style="color:#3b82f6;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Mensaje</span><p style="color:#cbd5e1;font-size:13px;margin:2px 0 0;">${s.mensaje.length > 60 ? s.mensaje.substring(0,60)+'...' : s.mensaje}</p></div>
+              ${s.notas ? `<div style="grid-column:1/-1;"><span style="color:#3b82f6;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Notas adicionales</span><p style="color:#94a3b8;font-size:13px;margin:2px 0 0;">${s.notas.length > 80 ? s.notas.substring(0,80)+'...' : s.notas}</p></div>` : ''}
+            </div>
+            <div style="display:flex;gap:8px;" onclick="event.stopPropagation()">
               <button id="btn-leida-${s.id}" onclick="marcarLeida('${s.id}', this)" style="background:${s.leida ? '#1e293b' : '#1e3a5f'};color:${s.leida ? '#475569' : '#93c5fd'};border:none;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px;">${s.leida ? 'Leída ✓' : '✓ Marcar leída'}</button>
               <button onclick="eliminarSugerencia('${s.id}', this)" style="background:#7f1d1d;color:#fca5a5;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px;">Eliminar</button>
             </div>
