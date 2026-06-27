@@ -915,10 +915,33 @@
   $("pwd-input").addEventListener("keypress", e => { if (e.key === "Enter") verificarClave(); });
 
   async function verificarClave() {
+    const btn = $("pwd-btn");
+
+    // Si estamos en modo segunda contraseña, verificar sin hacer fetch
+    if (btn._adminToken) {
+      const pwd2Input = $("pwd-input-2");
+      if (!pwd2Input) return;
+      const val2 = pwd2Input.value.trim();
+      if (!val2) return;
+      if (val2 !== "estalocura") {
+        $("pwd-lock").textContent = "❌";
+        $("pwd-msg").textContent = "Segunda contraseña incorrecta.";
+        $("pwd-msg").style.color = "var(--error-color)";
+        $("pwd-msg").style.display = "block";
+        pwd2Input.value = "";
+        pwd2Input.focus();
+        return;
+      }
+      const adminToken = btn._adminToken;
+      btn._adminToken = null;
+      $("pwd-overlay").style.display = "none";
+      mostrarPanelAdmin(adminToken);
+      return;
+    }
+
     const val = $("pwd-input").value;
     if (!val) return;
 
-    const btn = $("pwd-btn");
     btn.classList.add("cargando");
     btn.innerHTML = '<span id="pwd-dots"><span></span><span></span><span></span></span>';
     $("pwd-input").disabled = true;
@@ -934,39 +957,20 @@
     $("pwd-input").disabled = false;
 
     if (data.ok && data.adminToken) {
-      const pwd2Input = $("pwd-input-2");
-      if (!pwd2Input) {
-        const inputWrap = $("pwd-input").parentNode;
-        const div2 = document.createElement("div");
-        div2.id = "pwd-2-wrap";
-        div2.style.cssText = "margin-top:12px;animation:popIn 0.3s ease;";
-        div2.innerHTML = '<input id="pwd-input-2" type="password" placeholder="Segunda contraseña..." style="width:100%;padding:12px 16px;border-radius:10px;border:1px solid var(--border-input);background:var(--bg-page);color:var(--text-main);font-size:15px;outline:none;" autocomplete="off">';
-        inputWrap.appendChild(div2);
-        $("pwd-input-2").focus();
-        $("pwd-input-2").addEventListener("keydown", function(e) { if (e.key === "Enter") $("pwd-btn").click(); });
-        btn.textContent = "Entrar";
-        btn.classList.remove("cargando");
-        $("pwd-input").disabled = false;
-        btn._adminToken = data.adminToken;
-        return;
-      } else {
-        const val2 = pwd2Input.value.trim();
-        if (val2 !== "estalocura") {
-          $("pwd-lock").textContent = "❌";
-          $("pwd-msg").textContent = "Segunda contraseña incorrecta.";
-          $("pwd-msg").style.color = "var(--error-color)";
-          $("pwd-msg").style.display = "block";
-          btn.classList.remove("cargando");
-          $("pwd-input").disabled = false;
-          pwd2Input.value = "";
-          pwd2Input.focus();
-          return;
-        }
-        const adminToken = btn._adminToken;
-        $("pwd-overlay").style.display = "none";
-        mostrarPanelAdmin(adminToken);
-        return;
-      }
+      // Mostrar segundo campo de contraseña
+      btn._adminToken = data.adminToken;
+      const inputWrap = $("pwd-input").parentNode;
+      const div2 = document.createElement("div");
+      div2.id = "pwd-2-wrap";
+      div2.style.cssText = "margin-top:12px;animation:popIn 0.3s ease;";
+      div2.innerHTML = '<input id="pwd-input-2" type="password" placeholder="Segunda contraseña..." style="width:100%;padding:12px 16px;border-radius:10px;border:1px solid var(--border-input);background:var(--bg-page);color:var(--text-main);font-size:15px;outline:none;" autocomplete="off">';
+      inputWrap.appendChild(div2);
+      $("pwd-input-2").focus();
+      $("pwd-input-2").addEventListener("keydown", function(e) { if (e.key === "Enter") verificarClave(); });
+      btn.textContent = "Entrar";
+      btn.classList.remove("cargando");
+      $("pwd-input").disabled = false;
+      return;
     }
 
     if (data.ok) {
