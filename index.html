@@ -1033,6 +1033,7 @@
   let chatAmigos = [];
   let chatActivo = null;
   let chatPollInterval = null;
+  let badgePollInterval = null;
   let solicitudesPendientes = 0;
   let typingTimeout = null;
   let typingPollInterval = null;
@@ -1051,9 +1052,9 @@
   }
 
   function iniciarChatPolling() {
-    if (chatPollInterval) clearInterval(chatPollInterval);
+    if (badgePollInterval) clearInterval(badgePollInterval);
     actualizarBadgeSolicitudes();
-    chatPollInterval = setInterval(actualizarBadgeSolicitudes, 15000);
+    badgePollInterval = setInterval(actualizarBadgeSolicitudes, 5000);
   }
 
   async function actualizarBadgeSolicitudes() {
