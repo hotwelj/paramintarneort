@@ -515,33 +515,29 @@ textarea { min-height:110px; }
 <!-- Chat panel flotante -->
 <div id="chat-panel-placeholder"></div>
 <script>
-// Chat mínimo para sugerencias.html
+// Chat para sugerencias.html
 const CHAT_URL_S = "https://ort-admin.simonabulafia.workers.dev";
-let chatAmigos = [], chatActivo = null, chatPollInterval = null, solicitudesPendientes = 0;
-const $ = id => document.getElementById(id);
-function getMiNombre() { return sessionStorage.getItem("auth_userid") || ""; }
-function getMiTag() { return sessionStorage.getItem("auth_tag") || ""; }
-function getMiToken() { return sessionStorage.getItem("auth_token") || ""; }
-async function chatFetch(body) {
-  const res = await fetch(CHAT_URL_S, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({...body, token:getMiToken(), miNombre:getMiNombre(), miTag:getMiTag()}) });
+let chatAmigosS = [], chatPollIntervalS = null;
+function getMiNombreS() { return sessionStorage.getItem("auth_userid") || ""; }
+function getMiTagS() { return sessionStorage.getItem("auth_tag") || ""; }
+function getMiTokenS() { return sessionStorage.getItem("auth_token") || ""; }
+async function chatFetchS(body) {
+  const res = await fetch(CHAT_URL_S, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({...body, token:getMiTokenS(), miNombre:getMiNombreS(), miTag:getMiTagS()}) });
   return res.json();
 }
-function iniciarChatPolling() {
-  if (chatPollInterval) clearInterval(chatPollInterval);
-  actualizarBadge();
-  chatPollInterval = setInterval(actualizarBadge, 15000);
-}
-async function actualizarBadge() {
-  if (!getMiNombre()) return;
+async function actualizarBadgeS() {
+  if (!getMiNombreS()) return;
   try {
-    const data = await chatFetch({ action:"mis_solicitudes" });
+    const data = await chatFetchS({ action:"mis_solicitudes" });
     const sols = data.solicitudes?.length || 0;
     let msgs = 0;
-    const misChats = chatAmigos.length ? chatAmigos : JSON.parse(localStorage.getItem("mis_chats")||"[]");
+    const misChats = chatAmigosS.length ? chatAmigosS : JSON.parse(localStorage.getItem("mis_chats")||"[]");
     for (const a of misChats) {
       const uv = localStorage.getItem("ultimo_visto_"+a.chatId)||"";
-      const r = await chatFetch({action:"get_mensajes_nuevos",chatId:a.chatId,ultimoVisto:uv});
-      msgs += r.nuevos||0;
+      try {
+        const r = await chatFetchS({action:"get_mensajes_nuevos",chatId:a.chatId,ultimoVisto:uv});
+        msgs += r.nuevos||0;
+      } catch {}
     }
     const total = sols + msgs;
     const badge = document.getElementById("chat-badge");
@@ -549,24 +545,15 @@ async function actualizarBadge() {
   } catch {}
 }
 window.toggleChatPanel = function() {
-  const ex = document.getElementById("chat-overlay");
-  if (ex) { ex.style.animation="bubbleClose 0.22s forwards"; setTimeout(()=>ex.remove(),200); return; }
-  abrirChat();
-};
-window.abrirChat = function() {
-  if (document.getElementById("chat-overlay")) return;
-  // Redirigir al index con flag para abrir chat
-  window.location.href = "/?chat=1";
+  window.location.href = "/";
 };
 // Mostrar botón si autenticado
-// Mostrar botón chat si ya está autenticado
-(function() {
-  if (sessionStorage.getItem("auth_piratas") === "ok") {
-    const btn = document.getElementById("header-chat-btn");
-    if (btn) btn.style.display = "flex";
-    iniciarChatPolling();
-  }
-})();
+if (sessionStorage.getItem("auth_piratas") === "ok") {
+  const btn = document.getElementById("header-chat-btn");
+  if (btn) btn.style.display = "flex";
+  actualizarBadgeS();
+  chatPollIntervalS = setInterval(actualizarBadgeS, 15000);
+}
 </script>
 </body>
 </html>

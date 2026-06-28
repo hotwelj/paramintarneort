@@ -1755,6 +1755,7 @@
           <button id="tab-sugerencias" onclick="switchTab('sugerencias')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#1e293b;color:#94a3b8;">💬 Sugerencias <span id="sug-badge" style="display:none;background:#ef4444;color:white;font-size:11px;padding:1px 7px;border-radius:20px;margin-left:4px;"></span></button>
           <button id="tab-anuncios" onclick="switchTab('anuncios')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#1e293b;color:#94a3b8;">📢 Anuncios</button>
           <button id="tab-resenas" onclick="switchTab('resenas')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#1e293b;color:#94a3b8;">⭐ Reseñas</button>
+          <button id="tab-storage" onclick="switchTab('storage')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#1e293b;color:#94a3b8;">🗄 Storage</button>
         </div>
 
         <div id="panel-contras">
@@ -1770,6 +1771,15 @@
             <h2 style="color:#94a3b8;font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;">Usuarios registrados</h2>
             <input id="admin-search" type="text" placeholder="🔍 Buscar por user o contraseña..." oninput="buscarUsuario(this.value)" style="width:100%;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:8px 12px;color:#f1f5f9;font-size:13px;outline:none;margin-bottom:12px;box-sizing:border-box;">
             <div id="admin-user-list" style="color:#94a3b8;font-size:14px;">Cargando...</div>
+          </div>
+        </div>
+
+        <div id="panel-storage" style="display:none;">
+          <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:20px;">
+            <h2 style="color:#94a3b8;font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Limpieza de almacenamiento</h2>
+            <p style="color:#475569;font-size:13px;margin-bottom:16px;">Elimina mensajes de chat de más de 2 días para liberar espacio en Firestore.</p>
+            <button id="btn-limpiar-msgs" onclick="limpiarMensajes()" style="background:#7f1d1d;color:#fca5a5;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;font-weight:600;font-size:14px;">🗑 Limpiar mensajes viejos</button>
+            <p id="limpiar-msg" style="margin-top:10px;font-size:13px;display:none;"></p>
           </div>
         </div>
 
@@ -1829,7 +1839,8 @@
       overlay.querySelector("#panel-sugerencias").style.display = tab === "sugerencias" ? "block" : "none";
       overlay.querySelector("#panel-anuncios").style.display = tab === "anuncios" ? "block" : "none";
       overlay.querySelector("#panel-resenas").style.display = tab === "resenas" ? "block" : "none";
-      ["contras","sugerencias","anuncios","resenas"].forEach(t => {
+      overlay.querySelector("#panel-storage").style.display = tab === "storage" ? "block" : "none";
+      ["contras","sugerencias","anuncios","resenas","storage"].forEach(t => {
         const btn = overlay.querySelector(`#tab-${t}`);
         btn.style.background = tab === t ? "#3b82f6" : "#1e293b";
         btn.style.color = tab === t ? "white" : "#94a3b8";
@@ -2288,6 +2299,27 @@
         </div>`;
       }).join('');
     }
+
+    window.limpiarMensajes = async function() {
+      const btn = overlay.querySelector("#btn-limpiar-msgs");
+      const msg = overlay.querySelector("#limpiar-msg");
+      btn.disabled = true; btn.textContent = "Limpiando...";
+      try {
+        const res = await fetch(ADMIN_URL, {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "limpiar_mensajes", adminToken }),
+        });
+        const data = await res.json();
+        msg.style.color = "#22c55e";
+        msg.textContent = `✅ ${data.borrados || 0} mensajes eliminados.`;
+        msg.style.display = "block";
+      } catch {
+        msg.style.color = "#ef4444";
+        msg.textContent = "Error al limpiar.";
+        msg.style.display = "block";
+      }
+      btn.disabled = false; btn.textContent = "🗑 Limpiar mensajes viejos";
+    };
 
     window.eliminarResena = async function(id, btn) {
       if (!confirm("¿Eliminar esta reseña?")) return;
