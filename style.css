@@ -117,8 +117,19 @@
     .person-dropdown.closing .person-menu { display:block; animation:bubbleClose 0.22s cubic-bezier(0.4,0,1,1) forwards; }
     @keyframes bubblePop { 0%{opacity:0;transform:scale(0.7) translateY(-8px);} 100%{opacity:1;transform:scale(1) translateY(0);} }
     @keyframes bubbleClose { 0%{opacity:1;transform:scale(1) translateY(0);} 100%{opacity:0;transform:scale(0.7) translateY(-8px);} }
-    @keyframes chatPanelOpen { 0%{opacity:0;transform:scale(0.4);} 60%{opacity:1;transform:scale(1.04);} 100%{opacity:1;transform:scale(1);} }
-    @keyframes chatPanelClose { 0%{opacity:1;transform:scale(1);} 100%{opacity:0;transform:scale(0.4);} }
+    @keyframes chatPanelOpen {
+      0%   { opacity:0; transform:scaleY(0.02) scaleX(0.1) translateY(-480px); clip-path:polygon(45% 100%, 55% 100%, 55% 100%, 45% 100%); }
+      30%  { opacity:1; transform:scaleY(0.15) scaleX(0.4) translateY(-350px); clip-path:polygon(30% 80%, 70% 80%, 90% 100%, 10% 100%); }
+      60%  { transform:scaleY(0.7) scaleX(0.9) translateY(-80px);  clip-path:polygon(5% 20%, 95% 20%, 100% 100%, 0% 100%); }
+      85%  { transform:scaleY(1.04) scaleX(1.02) translateY(4px); clip-path:polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%); }
+      100% { opacity:1; transform:scaleY(1) scaleX(1) translateY(0); clip-path:polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%); }
+    }
+    @keyframes chatPanelClose {
+      0%   { opacity:1; transform:scaleY(1) scaleX(1) translateY(0); clip-path:polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%); }
+      30%  { transform:scaleY(0.7) scaleX(0.9) translateY(-80px);  clip-path:polygon(5% 20%, 95% 20%, 100% 100%, 0% 100%); }
+      70%  { opacity:1; transform:scaleY(0.15) scaleX(0.4) translateY(-350px); clip-path:polygon(30% 80%, 70% 80%, 90% 100%, 10% 100%); }
+      100% { opacity:0; transform:scaleY(0.02) scaleX(0.1) translateY(-480px); clip-path:polygon(45% 100%, 55% 100%, 55% 100%, 45% 100%); }
+    }
     @keyframes bannerClose { 0%{opacity:1;transform:scale(1);} 40%{opacity:1;transform:scale(1.04);} 100%{opacity:0;transform:scale(0.88);} }
     #session-label { margin:0 0 12px; font-size:12px; color:var(--text-muted); border-bottom:1px solid var(--border-card); padding-bottom:10px; }
     .logout-btn { display:flex; align-items:center; gap:10px; width:100%; background:none; border:none; cursor:pointer; padding:6px 4px; border-radius:8px; transition:background 0.15s; }
