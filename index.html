@@ -2539,6 +2539,10 @@
     if (chatPollInterval) clearInterval(chatPollInterval);
     cargarMensajes(amigo.chatId);
     localStorage.setItem("ultimo_visto_" + amigo.chatId, new Date().toISOString());
+    // Limpiar badge inmediatamente
+    msgsByChatId[amigo.chatId] = 0;
+    cargarAmigos();
+    actualizarBadgeSolicitudes();
     chatPollInterval = setInterval(() => { cargarMensajes(amigo.chatId); localStorage.setItem("ultimo_visto_" + amigo.chatId, new Date().toISOString()); }, 3000);
     iniciarTypingPoll(amigo.chatId, amigo.nombre);
   };
