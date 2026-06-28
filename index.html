@@ -848,7 +848,7 @@
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.157</span>
+    <span class="version-badge"><span class="version-dot"></span> v1.158</span>
   </div>
 </div>
 
@@ -1002,7 +1002,7 @@
       initFavBtns(); updateCounts();
       setTimeout(() => {
         $("pwd-overlay").classList.add("saliendo");
-        setTimeout(() => $("pwd-overlay").style.display = "none", 600);
+        setTimeout(() => { $("pwd-overlay").style.display = "none"; cargarBannerAnuncio(); }, 600);
       }, 700);
     } else {
       btn.textContent = "Entrar";
@@ -1020,6 +1020,27 @@
     const nombre = sessionStorage.getItem("auth_nombre") || "";
     if (nombre) $("session-label").textContent = "Sesión iniciada";
     favs = JSON.parse(localStorage.getItem(getFavsKey()) || "[]");
+    cargarBannerAnuncio();
+  }
+
+  async function cargarBannerAnuncio() {
+    try {
+      const res = await fetch("https://ort-admin.simonabulafia.workers.dev", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "get_anuncio", adminToken: "public" }),
+      });
+      const data = await res.json();
+      if (!data.anuncio) return;
+      const banner = document.createElement("div");
+      banner.id = "anuncio-banner";
+      banner.style.cssText = "position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:8888;background:var(--bg-card);border:1px solid var(--border-card);border-radius:16px;padding:12px 20px 12px 16px;box-shadow:0 8px 32px rgba(0,0,0,0.3);display:flex;align-items:center;gap:12px;max-width:500px;width:calc(100% - 48px);animation:bubblePop 0.4s cubic-bezier(0.34,1.56,0.64,1);";
+      banner.innerHTML = `
+        <span style="font-size:18px;">📢</span>
+        <p style="margin:0;font-size:14px;color:var(--text-main);line-height:1.4;flex:1;">${data.anuncio.mensaje}</p>
+        <button onclick="document.getElementById('anuncio-banner').remove()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;padding:0;line-height:1;flex-shrink:0;">✕</button>
+      `;
+      document.body.appendChild(banner);
+    } catch {}
   }
 
   // ── DESCARGA ──
@@ -1464,6 +1485,7 @@
         <div style="display:flex;gap:8px;margin-bottom:20px;">
           <button id="tab-contras" onclick="switchTab('contras')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#3b82f6;color:white;">🔑 Contraseñas</button>
           <button id="tab-sugerencias" onclick="switchTab('sugerencias')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#1e293b;color:#94a3b8;">💬 Sugerencias <span id="sug-badge" style="display:none;background:#ef4444;color:white;font-size:11px;padding:1px 7px;border-radius:20px;margin-left:4px;"></span></button>
+          <button id="tab-anuncios" onclick="switchTab('anuncios')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#1e293b;color:#94a3b8;">📢 Anuncios</button>
         </div>
 
         <div id="panel-contras">
@@ -1479,6 +1501,31 @@
             <h2 style="color:#94a3b8;font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;">Usuarios registrados</h2>
             <input id="admin-search" type="text" placeholder="🔍 Buscar por user o contraseña..." oninput="buscarUsuario(this.value)" style="width:100%;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:8px 12px;color:#f1f5f9;font-size:13px;outline:none;margin-bottom:12px;box-sizing:border-box;">
             <div id="admin-user-list" style="color:#94a3b8;font-size:14px;">Cargando...</div>
+          </div>
+        </div>
+
+        <div id="panel-anuncios" style="display:none;">
+          <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:20px;">
+            <h2 style="color:#94a3b8;font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px;">Publicar anuncio</h2>
+            <textarea id="anuncio-msg" placeholder="Escribí el anuncio..." style="width:100%;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:10px 14px;color:#f1f5f9;font-size:14px;outline:none;resize:vertical;min-height:80px;box-sizing:border-box;margin-bottom:10px;"></textarea>
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+              <label style="color:#94a3b8;font-size:13px;">Duración:</label>
+              <select id="anuncio-dias" style="background:#0f172a;border:1px solid #334155;border-radius:8px;padding:8px 12px;color:#f1f5f9;font-size:13px;outline:none;">
+                <option value="1">1 día</option>
+                <option value="3">3 días</option>
+                <option value="7" selected>7 días</option>
+                <option value="14">14 días</option>
+                <option value="30">30 días</option>
+              </select>
+              <button id="anuncio-pub-btn" style="background:#3b82f6;color:white;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;font-weight:600;font-size:14px;">📢 Publicar</button>
+              <button id="anuncio-del-btn" style="background:#7f1d1d;color:#fca5a5;border:none;border-radius:8px;padding:10px 16px;cursor:pointer;font-size:14px;">🗑 Eliminar</button>
+            </div>
+            <p id="anuncio-msg-status" style="margin-top:10px;font-size:13px;display:none;"></p>
+            <div id="anuncio-actual" style="margin-top:16px;padding:12px;background:#0f172a;border-radius:8px;border:1px solid #334155;display:none;">
+              <p style="color:#64748b;font-size:12px;margin:0 0 4px;">Anuncio activo:</p>
+              <p id="anuncio-actual-msg" style="color:#cbd5e1;font-size:14px;margin:0 0 4px;"></p>
+              <p id="anuncio-actual-expira" style="color:#475569;font-size:12px;margin:0;"></p>
+            </div>
           </div>
         </div>
 
@@ -1507,11 +1554,14 @@
     window.switchTab = function(tab) {
       overlay.querySelector("#panel-contras").style.display = tab === "contras" ? "block" : "none";
       overlay.querySelector("#panel-sugerencias").style.display = tab === "sugerencias" ? "block" : "none";
-      overlay.querySelector("#tab-contras").style.background = tab === "contras" ? "#3b82f6" : "#1e293b";
-      overlay.querySelector("#tab-contras").style.color = tab === "contras" ? "white" : "#94a3b8";
-      overlay.querySelector("#tab-sugerencias").style.background = tab === "sugerencias" ? "#3b82f6" : "#1e293b";
-      overlay.querySelector("#tab-sugerencias").style.color = tab === "sugerencias" ? "white" : "#94a3b8";
+      overlay.querySelector("#panel-anuncios").style.display = tab === "anuncios" ? "block" : "none";
+      ["contras","sugerencias","anuncios"].forEach(t => {
+        const btn = overlay.querySelector(`#tab-${t}`);
+        btn.style.background = tab === t ? "#3b82f6" : "#1e293b";
+        btn.style.color = tab === t ? "white" : "#94a3b8";
+      });
       if (tab === "sugerencias") cargarSugerencias();
+      if (tab === "anuncios") cargarAnuncioActual();
     };
 
     function renderUsuarios(usuarios, list) {
@@ -1724,6 +1774,55 @@
       modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
       document.body.appendChild(modal);
     };
+
+    // Anuncios
+    async function cargarAnuncioActual() {
+      const res = await fetch(ADMIN_URL, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "get_anuncio", adminToken }),
+      });
+      const data = await res.json();
+      const actual = overlay.querySelector("#anuncio-actual");
+      if (data.anuncio) {
+        actual.style.display = "block";
+        overlay.querySelector("#anuncio-actual-msg").textContent = data.anuncio.mensaje;
+        const exp = new Date(data.anuncio.expira).toLocaleString("es-AR", { day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit" });
+        overlay.querySelector("#anuncio-actual-expira").textContent = `Expira: ${exp}`;
+      } else { actual.style.display = "none"; }
+    }
+
+    overlay.querySelector("#anuncio-pub-btn").onclick = async function() {
+      const msg = overlay.querySelector("#anuncio-msg").value.trim();
+      const dias = overlay.querySelector("#anuncio-dias").value;
+      const status = overlay.querySelector("#anuncio-msg-status");
+      if (!msg) { status.style.color="#ef4444"; status.textContent="Escribí algo primero."; status.style.display="block"; return; }
+      this.textContent = "..."; this.disabled = true;
+      const res = await fetch(ADMIN_URL, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "set_anuncio", adminToken, mensaje: msg, dias: parseInt(dias) }),
+      });
+      const data = await res.json();
+      this.textContent = "📢 Publicar"; this.disabled = false;
+      if (data.ok) {
+        status.style.color="#22c55e"; status.textContent="✅ Anuncio publicado."; status.style.display="block";
+        overlay.querySelector("#anuncio-msg").value = "";
+        cargarAnuncioActual();
+      }
+    };
+
+    overlay.querySelector("#anuncio-del-btn").onclick = async function() {
+      if (!confirm("¿Eliminar el anuncio activo?")) return;
+      this.textContent = "..."; this.disabled = true;
+      await fetch(ADMIN_URL, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "delete_anuncio", adminToken }),
+      });
+      this.textContent = "🗑 Eliminar"; this.disabled = false;
+      const status = overlay.querySelector("#anuncio-msg-status");
+      status.style.color="#94a3b8"; status.textContent="Anuncio eliminado."; status.style.display="block";
+      cargarAnuncioActual();
+    };
+
     window.marcarLeida = async function(id, btn) {
       btn.textContent = "..."; btn.disabled = true;
       await fetch(ADMIN_URL, {
