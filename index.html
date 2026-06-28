@@ -1525,7 +1525,7 @@
             <div>
               <div style="display:flex;align-items:center;gap:6px;">
                 <span style="color:#f1f5f9;font-weight:600;">${u.nombre}</span>
-                ${u.sospechoso ? '<span title="Actividad sospechosa: muchos logins o horario raro" style="cursor:help;font-size:14px;">🚨</span>' : ''}
+                ${u.sospechoso ? `<span style="cursor:pointer;font-size:14px;position:relative;" onmouseenter="showTooltip(this, ${JSON.stringify(u.razonesSospecha||[])})" onmouseleave="hideTooltip()">🚨</span>` : ''}
                 <button onclick="const s=this.nextElementSibling;s.style.display=s.style.display==='none'?'inline':'none';this.textContent=s.style.display==='none'?'👁️':'🙈'" style="background:none;border:none;cursor:pointer;font-size:13px;padding:0;">👁️</button>
                 <span style="color:#64748b;font-size:12px;display:none;">${u.nombreReal || '—'}</span>
               </div>
@@ -1656,6 +1656,23 @@
       `;
       modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
       document.body.appendChild(modal);
+    };
+
+    // Tooltip sospechoso
+    window.showTooltip = function(el, razones) {
+      hideTooltip();
+      const tip = document.createElement("div");
+      tip.id = "admin-tooltip";
+      tip.style.cssText = "position:fixed;background:#0f172a;border:1px solid #ef4444;border-radius:8px;padding:8px 12px;font-size:12px;color:#fca5a5;z-index:20000;pointer-events:none;max-width:220px;box-shadow:0 4px 16px rgba(0,0,0,0.5);";
+      tip.innerHTML = "<strong style='color:#f87171;'>Actividad sospechosa:</strong><br>" + razones.map(r => "· " + r).join("<br>");
+      document.body.appendChild(tip);
+      const rect = el.getBoundingClientRect();
+      tip.style.left = Math.min(rect.left, window.innerWidth - 240) + "px";
+      tip.style.top = (rect.bottom + 6) + "px";
+    };
+    window.hideTooltip = function() {
+      const t = document.getElementById("admin-tooltip");
+      if (t) t.remove();
     };
 
     // Historial de logins
