@@ -117,6 +117,8 @@
     .person-dropdown.closing .person-menu { display:block; animation:bubbleClose 0.22s cubic-bezier(0.4,0,1,1) forwards; }
     @keyframes bubblePop { 0%{opacity:0;transform:scale(0.7) translateY(-8px);} 100%{opacity:1;transform:scale(1) translateY(0);} }
     @keyframes bubbleClose { 0%{opacity:1;transform:scale(1) translateY(0);} 100%{opacity:0;transform:scale(0.7) translateY(-8px);} }
+    @keyframes chatPanelOpen { 0%{opacity:0;transform:scale(0.4);} 60%{opacity:1;transform:scale(1.04);} 100%{opacity:1;transform:scale(1);} }
+    @keyframes chatPanelClose { 0%{opacity:1;transform:scale(1);} 100%{opacity:0;transform:scale(0.4);} }
     @keyframes bannerClose { 0%{opacity:1;transform:scale(1);} 40%{opacity:1;transform:scale(1.04);} 100%{opacity:0;transform:scale(0.88);} }
     #session-label { margin:0 0 12px; font-size:12px; color:var(--text-muted); border-bottom:1px solid var(--border-card); padding-bottom:10px; }
     .logout-btn { display:flex; align-items:center; gap:10px; width:100%; background:none; border:none; cursor:pointer; padding:6px 4px; border-radius:8px; transition:background 0.15s; }
