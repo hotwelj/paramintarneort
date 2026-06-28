@@ -1029,7 +1029,7 @@
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.162</span>
+    <span class="version-badge"><span class="version-dot"></span> </span>
   </div>
 </div>
 
@@ -1290,6 +1290,10 @@
     cargarBannerAnuncio();
     cargarRatingsCards();
     iniciarChatPolling();
+    // Abrir chat si viene desde sugerencias
+    if (new URLSearchParams(window.location.search).get('chat') === '1') {
+      setTimeout(() => abrirChat(), 300);
+    }
   }
 
   async function cargarBannerAnuncio() {
@@ -2360,7 +2364,7 @@
     if (document.getElementById("chat-overlay")) return;
     const overlay = document.createElement("div");
     overlay.id = "chat-overlay";
-    overlay.style.cssText = "position:fixed;bottom:60px;right:16px;z-index:9000;width:460px;max-width:calc(100vw - 32px);height:520px;display:flex;flex-direction:column;border-radius:18px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.5);animation:bubblePop 0.3s cubic-bezier(0.34,1.56,0.64,1);";
+    overlay.style.cssText = "position:fixed;bottom:60px;right:16px;z-index:9000;width:460px;max-width:calc(100vw - 32px);height:520px;min-width:320px;min-height:360px;max-height:calc(100vh - 80px);display:flex;flex-direction:column;border-radius:18px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.5);animation:bubblePop 0.3s cubic-bezier(0.34,1.56,0.64,1);resize:both;";
     overlay.className = "chat-float-panel";
     overlay.innerHTML = `
       <div style="display:flex;flex-direction:column;height:100%;">
@@ -2376,6 +2380,9 @@
             <div style="display:flex;border-bottom:1px solid var(--border-card);">
               <button onclick="chatTab('amigos')" id="chat-tab-amigos" style="flex:1;padding:10px;border:none;cursor:pointer;font-size:12px;font-weight:600;background:#3b82f6;color:white;">Amigos</button>
               <button onclick="chatTab('solicitudes')" id="chat-tab-solicitudes" style="flex:1;padding:10px;border:none;cursor:pointer;font-size:12px;font-weight:600;background:transparent;color:var(--text-muted);position:relative;">Solicitudes<span id="chat-sol-badge" style="display:none;position:absolute;top:4px;right:4px;background:#ef4444;color:white;font-size:9px;border-radius:50%;width:14px;height:14px;align-items:center;justify-content:center;font-weight:bold;"></span></button>
+            </div>
+            <div style="padding:6px 8px;border-bottom:1px solid var(--border-card);">
+              <input id="chat-search-input" type="text" placeholder="Buscar amigos..." oninput="filtrarAmigos(this.value)" style="width:100%;background:var(--bg-page);border:1px solid var(--border-card);border-radius:8px;padding:5px 10px;color:var(--text-main);font-size:12px;outline:none;box-sizing:border-box;">
             </div>
             <div style="padding:8px;border-bottom:1px solid var(--border-card);" id="chat-buscar-wrap">
               <input id="chat-buscar-input" type="text" placeholder="Tag del usuario..." style="width:100%;background:var(--bg-page);border:1px solid var(--border-card);border-radius:8px;padding:6px 10px;color:var(--text-main);font-size:12px;outline:none;box-sizing:border-box;" onkeydown="if(event.key==='Enter')chatBuscarUsuario()">
@@ -2491,6 +2498,40 @@
     if (nuevo.trim()) localStorage.setItem('apodo_' + nombre, nuevo.trim());
     else localStorage.removeItem('apodo_' + nombre);
     cargarAmigos();
+  };
+
+  window.filtrarAmigos = function(query) {
+    const q = query.trim().toLowerCase();
+    const overlay = document.getElementById("chat-overlay");
+    if (!overlay) return;
+    const lista = overlay.querySelector("#chat-lista");
+    if (!q) { cargarAmigos(); return; }
+    const filtrados = chatAmigos.filter((a, i) => {
+      const apodo = (localStorage.getItem('apodo_' + a.nombre) || '').toLowerCase();
+      return a.nombre.toLowerCase().includes(q) || (a.tag || '').toLowerCase().includes(q) || apodo.includes(q);
+    });
+    if (!filtrados.length) {
+      lista.innerHTML = '<p style="color:var(--text-muted);font-size:12px;padding:8px;text-align:center;">Sin resultados</p>';
+      return;
+    }
+    lista.innerHTML = filtrados.map((a) => {
+      const idx = chatAmigos.indexOf(a);
+      const apodo = localStorage.getItem('apodo_' + a.nombre) || '';
+      const nuevos = msgsByChatId[a.chatId] || 0;
+      return `<div data-chat-id="${a.chatId}" style="padding:8px 10px;border-radius:10px;transition:background 0.15s;" onmouseenter="this.style.background='var(--bg-page)'" onmouseleave="this.style.background='transparent'">
+        <div style="display:flex;align-items:center;gap:4px;">
+          <div onclick="abrirChatCon(${idx})" style="flex:1;cursor:pointer;min-width:0;">
+            <div style="font-weight:600;color:var(--text-main);font-size:13px;display:flex;align-items:center;gap:6px;">
+              ${apodo || a.nombre}
+              ${nuevos > 0 ? `<span style="background:#ef4444;color:white;font-size:10px;border-radius:50%;min-width:16px;height:16px;padding:0 4px;display:inline-flex;align-items:center;justify-content:center;font-weight:bold;">${nuevos}</span>` : ''}
+            </div>
+            <div style="color:var(--text-muted);font-size:11px;">${a.tag}</div>
+          </div>
+          <button onclick="editarApodo('${a.nombre}')" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:13px;padding:2px 4px;" title="Apodo">✏️</button>
+          <button onclick="eliminarAmigo('${a.nombre}', '${a.chatId}')" style="background:none;border:none;cursor:pointer;color:#ef4444;font-size:13px;padding:2px 4px;" title="Eliminar amigo">🗑</button>
+        </div>
+      </div>`;
+    }).join('');
   };
 
   window.chatBuscarUsuario = async function() {

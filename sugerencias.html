@@ -286,7 +286,7 @@ textarea { min-height:110px; }
 <!-- FOOTER -->
 <div class="footer">
   <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> v1.162</span>
+    <span class="version-badge"><span class="version-dot"></span> </span>
   </div>
 </div>
 
@@ -515,28 +515,30 @@ textarea { min-height:110px; }
 <!-- Chat panel flotante -->
 <div id="chat-panel-placeholder"></div>
 <script>
-// Chat para sugerencias.html
+// Chat en sugerencias — panel iframe
 const CHAT_URL_S = "https://ort-admin.simonabulafia.workers.dev";
-let chatAmigosS = [], chatPollIntervalS = null;
-function getMiNombreS() { return sessionStorage.getItem("auth_userid") || ""; }
-function getMiTagS() { return sessionStorage.getItem("auth_tag") || ""; }
+let chatPollIntervalS = null;
+
+function getMiNombreS() { return sessionStorage.getItem("auth_userid") || sessionStorage.getItem("auth_nombre") || ""; }
 function getMiTokenS() { return sessionStorage.getItem("auth_token") || ""; }
-async function chatFetchS(body) {
-  const res = await fetch(CHAT_URL_S, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({...body, token:getMiTokenS(), miNombre:getMiNombreS(), miTag:getMiTagS()}) });
-  return res.json();
-}
+function getMiTagS() { return sessionStorage.getItem("auth_tag") || ""; }
+
 async function actualizarBadgeS() {
   if (!getMiNombreS()) return;
   try {
-    const data = await chatFetchS({ action:"mis_solicitudes" });
+    const res = await fetch(CHAT_URL_S, { method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ action:"mis_solicitudes", token:getMiTokenS(), miNombre:getMiNombreS(), miTag:getMiTagS() }) });
+    const data = await res.json();
     const sols = data.solicitudes?.length || 0;
     let msgs = 0;
-    const misChats = chatAmigosS.length ? chatAmigosS : JSON.parse(localStorage.getItem("mis_chats")||"[]");
+    const misChats = JSON.parse(localStorage.getItem("mis_chats")||"[]");
     for (const a of misChats) {
-      const uv = localStorage.getItem("ultimo_visto_"+a.chatId)||"";
       try {
-        const r = await chatFetchS({action:"get_mensajes_nuevos",chatId:a.chatId,ultimoVisto:uv});
-        msgs += r.nuevos||0;
+        const uv = localStorage.getItem("ultimo_visto_"+a.chatId)||"";
+        const r = await fetch(CHAT_URL_S, { method:"POST", headers:{"Content-Type":"application/json"},
+          body: JSON.stringify({ action:"get_mensajes_nuevos", chatId:a.chatId, ultimoVisto:uv, token:getMiTokenS(), miNombre:getMiNombreS(), miTag:getMiTagS() }) });
+        const rd = await r.json();
+        msgs += rd.nuevos||0;
       } catch {}
     }
     const total = sols + msgs;
@@ -544,16 +546,34 @@ async function actualizarBadgeS() {
     if (badge) { badge.textContent = total; badge.style.display = total > 0 ? "flex" : "none"; }
   } catch {}
 }
+
 window.toggleChatPanel = function() {
-  window.location.href = "/";
+  const existing = document.getElementById("chat-iframe-wrap");
+  if (existing) {
+    existing.style.animation = "chatIframeFadeOut 0.2s forwards";
+    setTimeout(() => existing.remove(), 200);
+    return;
+  }
+  const wrap = document.createElement("div");
+  wrap.id = "chat-iframe-wrap";
+  wrap.style.cssText = "position:fixed;bottom:60px;right:16px;z-index:9999;width:460px;height:520px;min-width:320px;min-height:360px;max-height:calc(100vh - 80px);border-radius:18px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.5);resize:both;animation:chatIframeFadeIn 0.3s cubic-bezier(0.34,1.56,0.64,1);";
+  const iframe = document.createElement("iframe");
+  iframe.src = "/?chat=1";
+  iframe.style.cssText = "width:100%;height:100%;border:none;border-radius:18px;";
+  wrap.appendChild(iframe);
+  document.body.appendChild(wrap);
 };
-// Mostrar botón si autenticado
+
 if (sessionStorage.getItem("auth_piratas") === "ok") {
   const btn = document.getElementById("header-chat-btn");
   if (btn) btn.style.display = "flex";
   actualizarBadgeS();
-  chatPollIntervalS = setInterval(actualizarBadgeS, 15000);
+  chatPollIntervalS = setInterval(actualizarBadgeS, 5000);
 }
 </script>
+<style>
+@keyframes chatIframeFadeIn { from { opacity:0; transform:scale(0.9); } to { opacity:1; transform:scale(1); } }
+@keyframes chatIframeFadeOut { from { opacity:1; transform:scale(1); } to { opacity:0; transform:scale(0.9); } }
+</style>
 </body>
 </html>
