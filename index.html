@@ -1665,7 +1665,7 @@
       const tip = document.createElement("div");
       tip.id = "admin-tooltip";
       tip.style.cssText = "position:fixed;background:#0f172a;border:1px solid #ef4444;border-radius:8px;padding:8px 12px;font-size:12px;color:#fca5a5;z-index:20000;pointer-events:none;max-width:220px;box-shadow:0 4px 16px rgba(0,0,0,0.5);";
-      tip.innerHTML = "<strong style='color:#f87171;'>Actividad sospechosa:</strong><br>" + razones.map(r => "· " + r).join("<br>");
+      tip.innerHTML = "<strong style='color:#f87171;'>Actividad sospechosa:</strong><br>" + razones.map(r => "· " + r).join("<br>") + `<br><span style='color:#475569;font-size:11px;margin-top:4px;display:block;'>${window._usuarios[idx]?.totalLogins || 0} logins en total</span>`;
       document.body.appendChild(tip);
       const rect = el.getBoundingClientRect();
       tip.style.left = Math.min(rect.left, window.innerWidth - 240) + "px";
