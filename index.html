@@ -1101,7 +1101,7 @@
     const existing = document.getElementById("chat-overlay");
     if (existing) {
       existing.style.transformOrigin = "top right"; existing.style.animation = "chatPanelClose 0.4s ease-in forwards";
-      setTimeout(() => existing.remove(), 200);
+      setTimeout(() => existing.remove(), 400);
       return;
     }
     abrirChat();
