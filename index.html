@@ -1833,6 +1833,28 @@
     overlay.style.transition = "opacity 0.45s cubic-bezier(0.22,1,0.36,1), transform 0.45s cubic-bezier(0.22,1,0.36,1)";
     overlay.style.filter = "blur(4px)";
     document.body.appendChild(overlay);
+    // Drag resize desde esquina inferior-izquierda
+    const handle = overlay.querySelector("#chat-resize-handle");
+    handle.addEventListener("mousedown", function(e) {
+      e.preventDefault();
+      const startX = e.clientX, startY = e.clientY;
+      const startW = overlay.offsetWidth, startH = overlay.offsetHeight;
+      const startRight = parseInt(overlay.style.right) || 16;
+      function onMove(e) {
+        const dw = startX - e.clientX;
+        const dh = e.clientY - startY;
+        const newW = Math.max(320, Math.min(window.innerWidth - 32, startW + dw));
+        const newH = Math.max(360, Math.min(window.innerHeight - 80, startH + dh));
+        overlay.style.width = newW + "px";
+        overlay.style.height = newH + "px";
+      }
+      function onUp() {
+        document.removeEventListener("mousemove", onMove);
+        document.removeEventListener("mouseup", onUp);
+      }
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onUp);
+    });
     requestAnimationFrame(() => requestAnimationFrame(() => {
       overlay.style.opacity = "1";
       overlay.style.transform = "translateY(0) scale(1)";
@@ -2361,9 +2383,12 @@
     if (document.getElementById("chat-overlay")) return;
     const overlay = document.createElement("div");
     overlay.id = "chat-overlay";
-    overlay.style.cssText = "position:fixed;top:60px;right:16px;z-index:9000;width:460px;max-width:calc(100vw - 32px);height:520px;min-width:320px;min-height:360px;max-height:calc(100vh - 80px);display:flex;flex-direction:column;border-radius:18px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.5);animation:chatPanelOpen 0.5s ease-out;transform-origin:top right;resize:both;";
+    overlay.style.cssText = "position:fixed;top:60px;right:16px;z-index:9000;width:460px;max-width:calc(100vw - 32px);height:520px;min-width:320px;min-height:360px;max-height:calc(100vh - 80px);display:flex;flex-direction:column;border-radius:18px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.5);animation:chatPanelOpen 0.5s ease-out;transform-origin:top right;";
     overlay.className = "chat-float-panel";
     overlay.innerHTML = `
+      <div style="position:absolute;bottom:0;left:0;width:18px;height:18px;cursor:sw-resize;z-index:10;" id="chat-resize-handle">
+        <svg width="18" height="18" viewBox="0 0 18 18" style="position:absolute;bottom:3px;left:3px;opacity:0.3;"><path d="M2 16 L16 2" stroke="#94a3b8" stroke-width="1.5"/><path d="M2 11 L11 2" stroke="#94a3b8" stroke-width="1.5"/><path d="M2 6 L6 2" stroke="#94a3b8" stroke-width="1.5"/></svg>
+      </div>
       <div style="display:flex;flex-direction:column;height:100%;">
         <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border-card);">
           <h2 style="color:var(--text-main);font-size:16px;margin:0;">💬 Mensajes</h2>
