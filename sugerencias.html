@@ -89,7 +89,8 @@ textarea { min-height:110px; }
 .success-msg a { display:inline-block; padding:11px 28px; background:#0b3a75; color:white; border-radius:10px; text-decoration:none; font-weight:bold; font-size:14px; transition:background 0.2s; }
 
 .success-msg a:hover { background:#1d4ed8; }
-  </style>
+      @keyframes bannerCloseS { 0%{opacity:1;transform:scale(1);} 40%{opacity:1;transform:scale(1.04);} 100%{opacity:0;transform:scale(0.88);} }
+</style>
 </head>
 <body>
 
@@ -285,8 +286,17 @@ textarea { min-height:110px; }
 
 <!-- FOOTER -->
 <div class="footer">
-  <div class="footer-version">
-    <span class="version-badge"><span class="version-dot"></span> </span>
+  <div class="footer-item">
+    <div class="footer-icon">🛡️</div>
+    <div><strong>Seguro</strong><p>Todos los archivos fueron escaneados.</p></div>
+  </div>
+  <div class="footer-item">
+    <div class="footer-icon">🚀</div>
+    <div><strong>Fácil de usar</strong><p>Descargá, descomprimí y jugá.</p></div>
+  </div>
+  <div class="footer-item">
+    <div class="footer-icon">🩵</div>
+    <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
   </div>
 </div>
 
@@ -548,20 +558,7 @@ async function actualizarBadgeS() {
 }
 
 window.toggleChatPanel = function() {
-  const existing = document.getElementById("chat-iframe-wrap");
-  if (existing) {
-    existing.style.animation = "chatIframeFadeOut 0.2s forwards";
-    setTimeout(() => existing.remove(), 200);
-    return;
-  }
-  const wrap = document.createElement("div");
-  wrap.id = "chat-iframe-wrap";
-  wrap.style.cssText = "position:fixed;bottom:60px;right:16px;z-index:9999;width:460px;height:520px;min-width:320px;min-height:360px;max-height:calc(100vh - 80px);border-radius:18px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.5);resize:both;animation:chatIframeFadeIn 0.3s cubic-bezier(0.34,1.56,0.64,1);";
-  const iframe = document.createElement("iframe");
-  iframe.src = "/?chat=1";
-  iframe.style.cssText = "width:100%;height:100%;border:none;border-radius:18px;";
-  wrap.appendChild(iframe);
-  document.body.appendChild(wrap);
+  window.location.href = "/?chat=1";
 };
 
 if (sessionStorage.getItem("auth_piratas") === "ok") {
@@ -569,11 +566,32 @@ if (sessionStorage.getItem("auth_piratas") === "ok") {
   if (btn) btn.style.display = "flex";
   actualizarBadgeS();
   chatPollIntervalS = setInterval(actualizarBadgeS, 5000);
+  cargarBannerAnuncioS();
+}
+
+async function cargarBannerAnuncioS() {
+  try {
+    const res = await fetch("https://ort-admin.simonabulafia.workers.dev", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "get_anuncio", adminToken: "public" }),
+    });
+    const data = await res.json();
+    if (!data.anuncios || !data.anuncios.length) return;
+    data.anuncios.forEach((anuncio, i) => {
+      const banner = document.createElement("div");
+      banner.id = `anuncio-banner-${i}`;
+      banner.style.cssText = `position:fixed;top:${28 + i * 80}px;left:0;right:0;z-index:8888;display:flex;justify-content:center;pointer-events:none;`;
+      banner.innerHTML = `
+        <div style="background:#1e293b;border:1px solid #334155;border-radius:16px;padding:14px 22px 14px 18px;box-shadow:0 8px 32px rgba(0,0,0,0.3);display:flex;align-items:center;gap:14px;max-width:560px;width:calc(100% - 48px);pointer-events:all;">
+          <span style="font-size:20px;">📢</span>
+          <p style="margin:0;font-size:15px;color:#f1f5f9;line-height:1.5;flex:1;font-weight:500;">${anuncio.mensaje}</p>
+          <button onclick="const w=this.closest('[id^=anuncio-banner]');const inner=w.querySelector('div');inner.style.animation='bannerCloseS 0.35s cubic-bezier(0.4,0,0.2,1) forwards';setTimeout(()=>w.remove(),320);" style="background:none;border:none;color:#64748b;cursor:pointer;font-size:20px;padding:0;line-height:1;flex-shrink:0;">✕</button>
+        </div>`;
+      document.body.appendChild(banner);
+    });
+  } catch {}
 }
 </script>
-<style>
-@keyframes chatIframeFadeIn { from { opacity:0; transform:scale(0.9); } to { opacity:1; transform:scale(1); } }
-@keyframes chatIframeFadeOut { from { opacity:1; transform:scale(1); } to { opacity:0; transform:scale(0.9); } }
-</style>
+
 </body>
 </html>
