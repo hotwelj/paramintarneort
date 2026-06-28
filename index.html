@@ -2496,6 +2496,7 @@
     if (!data.ok) { result.innerHTML = '<span style="color:#ef4444;">No encontrado</span>'; return; }
     const u = data.usuario;
     if (u.nombre === getMiNombre()) { result.innerHTML = '<span style="color:#ef4444;">Sos vos mismo</span>'; return; }
+    if (chatAmigos.some(a => a.nombre === u.nombre)) { result.innerHTML = '<span style="color:#94a3b8;">Ya son amigos</span>'; return; }
     result.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;background:var(--bg-page);border-radius:8px;padding:6px 10px;">
       <div><div style="color:var(--text-main);font-size:12px;font-weight:600;">${u.nombre}</div><div style="color:var(--text-muted);font-size:11px;">${u.tag}</div></div>
       <button onclick="enviarSolicitud('${u.nombre}','${u.tag}')" style="background:#3b82f6;color:white;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:11px;">+ Agregar</button>
