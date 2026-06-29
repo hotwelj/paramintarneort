@@ -27,6 +27,7 @@
     <span class="pwd-lock" id="pwd-lock">🔒</span>
     <h2>Ort Piratas</h2>
     <p class="pwd-sub">Ingresá la contraseña para acceder</p>
+    <p style="margin-top:6px;font-size:11px;"><span onclick="document.getElementById('disclaimer-modal').style.display='flex'" style="color:var(--text-muted);text-decoration:underline;cursor:pointer;">Disclaimer</span></p>
     <div style="position:relative; margin-bottom:12px;">
       <input type="password" id="pwd-input" placeholder="Contraseña..." autofocus>
       <button id="show-pwd-btn"
@@ -1027,6 +1028,9 @@
   <div class="footer-item">
     <div class="footer-icon">🩵</div>
     <div><strong>Hecho con pasión</strong><p>Para nuestra comunidad pirata.</p></div>
+  </div>
+  <div style="text-align:center;margin-top:12px;padding-bottom:4px;">
+    <span onclick="document.getElementById('disclaimer-modal').style.display='flex'" style="color:var(--text-muted);font-size:12px;text-decoration:underline;cursor:pointer;">Disclaimer</span>
   </div>
 </div>
 
@@ -2997,5 +3001,15 @@
 
 
 </script>
+
+<!-- Modal Disclaimer -->
+<div id="disclaimer-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;align-items:center;justify-content:center;padding:24px;">
+  <div style="background:var(--bg-card);border-radius:18px;padding:32px;max-width:480px;width:100%;border:1px solid var(--border-card);box-shadow:0 24px 64px rgba(0,0,0,0.5);position:relative;">
+    <button onclick="document.getElementById('disclaimer-modal').style.display='none'" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text-muted);font-size:22px;cursor:pointer;line-height:1;">✕</button>
+    <h2 style="margin:0 0 16px;font-size:18px;font-weight:700;color:var(--text-main);letter-spacing:0.05em;">DISCLAIMER</h2>
+    <p style="color:var(--text-muted);font-size:14px;line-height:1.7;margin:0 0 12px;">Este sitio no fue creado con el fin de evitar el estudio o reemplazar el trabajo en clase. Está pensado para quienes no pueden costear juegos o necesitan optimizar el espacio en sus dispositivos.</p>
+    <p style="color:var(--text-muted);font-size:14px;line-height:1.7;margin:0;">Ninguna de las personas que participaron o colaboraron en este proyecto se hace responsable por el uso que se le dé al contenido aquí disponible.</p>
+  </div>
+</div>
 </body>
 </html>
