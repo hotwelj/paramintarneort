@@ -1290,6 +1290,8 @@
     cargarBannerAnuncio();
     cargarRatingsCards();
     iniciarChatPolling();
+    // Auto-borrar mensajes viejos (>2 días) en background
+    setTimeout(autoLimpiarMensajesViejos, 3000);
     // Abrir chat si viene desde sugerencias
     if (new URLSearchParams(window.location.search).get('chat') === '1') {
       setTimeout(() => abrirChat(), 300);
@@ -1790,7 +1792,7 @@
           <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:20px;">
             <h2 style="color:#94a3b8;font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Limpieza de almacenamiento</h2>
             <p style="color:#475569;font-size:13px;margin-bottom:16px;">Elimina mensajes de chat de más de 2 días para liberar espacio en Firestore.</p>
-            <button id="btn-limpiar-msgs" onclick="limpiarMensajes()" style="background:#7f1d1d;color:#fca5a5;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;font-weight:600;font-size:14px;">🗑 Limpiar mensajes viejos</button>
+            <button id="btn-limpiar-msgs" onclick="limpiarMensajes()" style="background:#7f1d1d;color:#fca5a5;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;font-weight:600;font-size:14px;">🗑 Borrar todos los mensajes</button>
             <p id="limpiar-msg" style="margin-top:10px;font-size:13px;display:none;"></p>
           </div>
         </div>
@@ -2331,7 +2333,7 @@
         msg.textContent = "Error al limpiar.";
         msg.style.display = "block";
       }
-      btn.disabled = false; btn.textContent = "🗑 Limpiar mensajes viejos";
+      btn.disabled = false; btn.textContent = "🗑 Borrar todos los mensajes";
     };
 
     window.eliminarResena = async function(id, btn) {
@@ -2812,7 +2814,41 @@
           </div>
         </div>`;
       }).join('');
-      if (wasAtBottom) lista.scrollTop = lista.scrollHeight;
+      if (wasAtBottom) {
+        lista.scrollTop = lista.scrollHeight;
+      } else {
+        // Contar mensajes nuevos (después del último scroll)
+        const nuevosIndicador = lista.parentElement.querySelector('#chat-nuevos-btn');
+        const lastBottom = lista._lastScrollBottom || 0;
+        const nuevos = msgs.filter(m => m.de !== getMiNombre() && new Date(m.fecha).getTime() > lastBottom).length;
+        if (nuevos > 0) {
+          if (!nuevosIndicador) {
+            const btn = document.createElement('button');
+            btn.id = 'chat-nuevos-btn';
+            btn.style.cssText = 'position:absolute;bottom:70px;left:50%;transform:translateX(-50%);background:#3b82f6;color:white;border:none;border-radius:20px;padding:6px 14px;cursor:pointer;font-size:12px;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,0.3);z-index:10;';
+            btn.onclick = () => { lista.scrollTop = lista.scrollHeight; btn.remove(); lista._lastScrollBottom = Date.now(); };
+            btn.textContent = `↓ ${nuevos} nuevo${nuevos > 1 ? 's' : ''}`;
+            lista.parentElement.style.position = 'relative';
+            lista.parentElement.appendChild(btn);
+          } else {
+            nuevosIndicador.textContent = `↓ ${nuevos} nuevo${nuevos > 1 ? 's' : ''}`;
+          }
+        }
+      }
+      // Ocultar indicador si llegó al fondo
+      lista.onscroll = () => {
+        if (lista.scrollHeight - lista.scrollTop <= lista.clientHeight + 10) {
+          lista.parentElement.querySelector('#chat-nuevos-btn')?.remove();
+          lista._lastScrollBottom = Date.now();
+        }
+      };
+    } catch {}
+  }
+
+  async function autoLimpiarMensajesViejos() {
+    // Delega al worker para limpiar mensajes viejos (>2 días) del usuario actual
+    try {
+      await chatFetch({ action: "auto_limpiar_viejos" });
     } catch {}
   }
 
