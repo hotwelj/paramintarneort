@@ -2393,17 +2393,6 @@
             const uid = "ac"+_adminMsgN;
             const restantes = msgs.length - 2;
             const preview = msgs.slice(-2).map(renderRow).join("");
-            return "<div id='col_"+uid+"'>"+preview+"<button style='width:100%;margin-top:6px;background:#0f172a;border:1px solid #1e3a5f;border-radius:6px;padding:4px;color:#64748b;font-size:11px;cursor:pointer;' onclick='adminExpandMsg(this,"col_"+uid+"","hid_"+uid+"")'>&#9650; Ver "+restantes+" anteriores</button></div>"
-              +"<div id='hid_"+uid+"' style='display:none;'>"+all+"<button style='width:100%;margin-top:6px;background:#0f172a;border:1px solid #1e3a5f;border-radius:6px;padding:4px;color:#64748b;font-size:11px;cursor:pointer;' onclick='adminCollapseMsg(this,"col_"+uid+"","hid_"+uid+"")'>&#9660; Colapsar</button></div>";
-          };
-            if (msgs.length <= 2) return renderAll(msgs);
-            _adminMsgN++;
-            const uid = "ac"+_adminMsgN;
-            const restantes = msgs.length - 2;
-            return "<div id='col_"+uid+"'>"+renderAll(msgs.slice(-2))+"</div>"
-              +"<div id='hid_"+uid+"' style='display:none;'>"+renderAll(msgs)+"</div>"
-              +"<button onclick=\"document.getElementById('col_"+uid+"').style.display='none';document.getElementById('hid_"+uid+"').style.display='block';this.style.display='none';\" style='width:100%;margin-top:6px;background:#0f172a;border:1px solid #1e3a5f;border-radius:6px;padding:4px;color:#64748b;font-size:11px;cursor:pointer;'>&#9650; Ver "+restantes+" anteriores</button>";
-          };
 
         if (modo === 'privados') {
           const chats = data.chats || [];
