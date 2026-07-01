@@ -2775,8 +2775,17 @@
     localStorage.setItem("ultimo_visto_" + grupo.id, new Date().toISOString());
     msgsByChatId[grupo.id] = 0;
     cargarMensajes(grupo.id);
-    chatPollInterval = setInterval(() => {
-      cargarMensajes(grupo.id);
+    chatPollInterval = setInterval(async () => {
+      const chatId = grupo.id;
+      try {
+        const r = await chatFetch({ action: "check_timestamp", chatId });
+        if (r.ok && r.timestamp && r.timestamp !== _ultimoTimestamp[chatId]) {
+          _ultimoTimestamp[chatId] = r.timestamp;
+          await cargarMensajes(chatId);
+          localStorage.setItem("ultimo_visto_" + chatId, new Date().toISOString());
+        }
+      } catch {}
+    }, 5000)
       localStorage.setItem("ultimo_visto_" + grupo.id, new Date().toISOString());
     }, 3000);
   };
@@ -2894,9 +2903,21 @@
     msgsByChatId[amigo.chatId] = 0;
     cargarAmigos();
     actualizarBadgeSolicitudes();
-    chatPollInterval = setInterval(() => { cargarMensajes(amigo.chatId); localStorage.setItem("ultimo_visto_" + amigo.chatId, new Date().toISOString()); }, 3000);
+    chatPollInterval = setInterval(async () => {
+      const chatId = amigo.chatId;
+      try {
+        const r = await chatFetch({ action: "check_timestamp", chatId });
+        if (r.ok && r.timestamp && r.timestamp !== _ultimoTimestamp[chatId]) {
+          _ultimoTimestamp[chatId] = r.timestamp;
+          await cargarMensajes(chatId);
+          localStorage.setItem("ultimo_visto_" + chatId, new Date().toISOString());
+        }
+      } catch {}
+    }, 5000) localStorage.setItem("ultimo_visto_" + amigo.chatId, new Date().toISOString()); }, 3000);
     iniciarTypingPoll(amigo.chatId, amigo.nombre);
   };
+
+  let _ultimoTimestamp = {};
 
   async function cargarMensajes(chatId) {
     const overlay = document.getElementById("chat-overlay");
