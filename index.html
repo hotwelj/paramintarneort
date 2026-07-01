@@ -2333,16 +2333,28 @@
         const data = await res.json();
         if (!data.ok) { lista.innerHTML = '<p style="color:#ef4444;">Error al cargar</p>'; return; }
 
-        const renderMsgs = (msgs) => {
-          let ld = '';
-          return msgs.map(m => {
-            const fo = new Date(m.fecha);
-            const fs = fo.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'});
-            const hora = fo.toLocaleString('es-AR',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'});
-            const sep = fs!==ld ? '<div style="text-align:center;margin:6px 0 4px;"><span style="background:#1e293b;color:#64748b;font-size:10px;padding:2px 8px;border-radius:10px;">'+fs+'</span></div>' : '';
-            ld = fs;
-            return sep+'<div style="padding:5px 0;border-bottom:1px solid #1e293b;display:flex;gap:8px;align-items:baseline;"><span style="color:#3b82f6;font-size:11px;font-weight:600;flex-shrink:0;">'+m.de+'</span><span style="color:#e2e8f0;font-size:13px;flex:1;word-break:break-word;">'+m.texto+'</span><span style="color:#475569;font-size:10px;flex-shrink:0;">'+hora+'</span></div>';
-          }).join('');
+        const adminChatIdCounter = { n: 0 };
+        const renderMsgs = (msgs, chatKey) => {
+          const uid = 'chat_' + (++adminChatIdCounter.n);
+          const renderAll = (allMsgs) => {
+            let ld = '';
+            return allMsgs.map(m => {
+              const fo = new Date(m.fecha);
+              const fs = fo.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'});
+              const hora = fo.toLocaleString('es-AR',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'});
+              const sep = fs!==ld ? '<div style="text-align:center;margin:6px 0 4px;"><span style="background:#1e293b;color:#64748b;font-size:10px;padding:2px 8px;border-radius:10px;">'+fs+'</span></div>' : '';
+              ld = fs;
+              return sep+'<div style="padding:5px 0;border-bottom:1px solid #1e293b;display:flex;gap:8px;align-items:baseline;"><span style="color:#3b82f6;font-size:11px;font-weight:600;flex-shrink:0;">'+m.de+'</span><span style="color:#e2e8f0;font-size:13px;flex:1;word-break:break-word;">'+m.texto+'</span><span style="color:#475569;font-size:10px;flex-shrink:0;">'+hora+'</span></div>';
+            }).join('');
+          };
+          if (msgs.length <= 2) return renderAll(msgs);
+          const ultimos = msgs.slice(-2);
+          const restantes = msgs.length - 2;
+          const colId = 'collapsed_' + uid;
+          const hidId = 'hidden_' + uid;
+          return '<div id="' + colId + '">' + renderAll(ultimos) + '</div>' +
+            '<div id="' + hidId + '" style="display:none;">' + renderAll(msgs) + '</div>' +
+            '<button onclick="document.getElementById(' + "'" + colId + "'" + ').style.display=' + "'none'" + ';document.getElementById(' + "'" + hidId + "'" + ').style.display=' + "'block'" + ';this.style.display=' + "'none'" + ';" style="width:100%;margin-top:6px;background:#0f172a;border:1px solid #1e3a5f;border-radius:6px;padding:4px;color:#64748b;font-size:11px;cursor:pointer;">&#9650; Ver ' + restantes + ' mensajes anteriores</button>';
         };
 
         if (modo === 'privados') {
