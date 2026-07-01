@@ -2872,6 +2872,7 @@
 
     try {
       const data = await chatFetch({ action: "get_mensajes", chatId });
+      console.log('get_mensajes response:', JSON.stringify(data).slice(0,200));
       if (!data.ok) { renderMensajes(chatId, overlay); return; }
       _ultimoFetch[chatId] = Date.now();
       _msgsCache[chatId] = (data.msgs || []).sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
