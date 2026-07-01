@@ -2855,22 +2855,24 @@
     iniciarTypingPoll(amigo.chatId, amigo.nombre);
   };
 
-  let _cargandoMsgs = false;
   async function cargarMensajes(chatId) {
-    if (_cargandoMsgs) return;
     const overlay = document.getElementById("chat-overlay");
     if (!overlay || !chatId) return;
-    _cargandoMsgs = true;
     try {
-      const data = await chatFetch({ action: "get_mensajes", chatId });
-      if (!data.ok) return;
-      const msgs = (data.msgs || []).map(m => ({
-        de: m.de || "",
-        texto: (m.texto || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"),
-        fecha: m.fecha || "",
+      const res = await fetch(`https://firestore.googleapis.com/v1/projects/ortpiratas-chat/databases/(default)/documents/chats/${chatId}/msgs?pageSize=50`);
+      if (!res.ok) return;
+      const data = await res.json();
+      const msgs = (data.documents || []).map(d => ({
+        de: d.fields?.de?.stringValue || "",
+        texto: d.fields?.texto?.stringValue || "",
+        fecha: d.fields?.fecha?.stringValue || "",
       })).sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
       const lista = overlay.querySelector("#chat-msgs-list");
-      if (!msgs.length) { lista.innerHTML = '<p style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px;">Sin mensajes aún</p>'; return; }
+      if (!lista) return;
+      if (!msgs.length) {
+        lista.innerHTML = '<p style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px;">Sin mensajes aún</p>';
+        return;
+      }
       const wasAtBottom = lista.scrollHeight - lista.scrollTop <= lista.clientHeight + 40;
       let lastDateChat = '';
       lista.innerHTML = msgs.map(m => {
@@ -2891,32 +2893,24 @@
       if (wasAtBottom) {
         lista.scrollTop = lista.scrollHeight;
       } else {
-        // Contar mensajes nuevos (después del último scroll)
-        const nuevosIndicador = lista.parentElement.querySelector('#chat-nuevos-btn');
-        const lastBottom = lista._lastScrollBottom || 0;
-        const nuevos = msgs.filter(m => m.de !== getMiNombre() && new Date(m.fecha).getTime() > lastBottom).length;
-        if (nuevos > 0) {
-          if (!nuevosIndicador) {
-            const btn = document.createElement('button');
-            btn.id = 'chat-nuevos-btn';
-            btn.style.cssText = 'position:absolute;bottom:70px;left:50%;transform:translateX(-50%);background:#3b82f6;color:white;border:none;border-radius:20px;padding:6px 14px;cursor:pointer;font-size:12px;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,0.3);z-index:10;';
-            btn.onclick = () => { lista.scrollTop = lista.scrollHeight; btn.remove(); lista._lastScrollBottom = Date.now(); };
-            btn.textContent = `↓ ${nuevos} nuevo${nuevos > 1 ? 's' : ''}`;
-            lista.parentElement.style.position = 'relative';
-            lista.parentElement.appendChild(btn);
-          } else {
-            nuevosIndicador.textContent = `↓ ${nuevos} nuevo${nuevos > 1 ? 's' : ''}`;
-          }
+        const nuevosBtn = lista.parentElement?.querySelector('#chat-nuevos-btn');
+        const nuevos = msgs.filter(m => m.de !== getMiNombre() && new Date(m.fecha).getTime() > (lista._lastScrollBottom || 0)).length;
+        if (nuevos > 0 && !nuevosBtn) {
+          const btn = document.createElement('button');
+          btn.id = 'chat-nuevos-btn';
+          btn.style.cssText = 'position:absolute;bottom:70px;left:50%;transform:translateX(-50%);background:#3b82f6;color:white;border:none;border-radius:20px;padding:6px 14px;cursor:pointer;font-size:12px;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,0.3);z-index:10;';
+          btn.onclick = () => { lista.scrollTop = lista.scrollHeight; btn.remove(); lista._lastScrollBottom = Date.now(); };
+          btn.textContent = '↓ ' + nuevos + ' nuevo' + (nuevos > 1 ? 's' : '');
+          if (lista.parentElement) { lista.parentElement.style.position = 'relative'; lista.parentElement.appendChild(btn); }
         }
       }
-      // Ocultar indicador si llegó al fondo
       lista.onscroll = () => {
         if (lista.scrollHeight - lista.scrollTop <= lista.clientHeight + 10) {
-          lista.parentElement.querySelector('#chat-nuevos-btn')?.remove();
+          lista.parentElement?.querySelector('#chat-nuevos-btn')?.remove();
           lista._lastScrollBottom = Date.now();
         }
       };
-    } catch {} finally { _cargandoMsgs = false; }
+    } catch(e) { console.error('cargarMensajes error:', e); }
   }
 
   async function autoLimpiarMensajesViejos() {
