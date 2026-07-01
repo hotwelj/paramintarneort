@@ -1,4 +1,4 @@
-# juegos-ort
+# juegos-sort
 
 Ésta página esta hecha para que se puedan descargar juegos de forma más intuitiva.
 
