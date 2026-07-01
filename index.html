@@ -2363,29 +2363,35 @@
         const data = await res.json();
         if (!data.ok) { lista.innerHTML = '<p style="color:#ef4444;">Error al cargar</p>'; return; }
 
-        const adminChatIdCounter = { n: 0 };
-        const renderMsgs = (msgs) => {
-          if (!msgs.length) return '<p style="color:#475569;font-size:12px;margin:4px 0 0;">Sin mensajes recientes</p>';
-          let ld = '';
-          const uid = 'c' + (++adminChatIdCounter.n);
-          const colId = 'collapsed_' + uid;
-          const hidId = 'hidden_' + uid;
-          const renderAll = (ms) => ms.map(m => {
-            const fo = new Date(m.fecha);
-            const fs = fo.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'});
-            const hora = fo.toLocaleString('es-AR',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'});
-            const sep = fs!==ld ? '<div style="text-align:center;margin:6px 0 4px;"><span style="background:#1e293b;color:#64748b;font-size:10px;padding:2px 8px;border-radius:10px;">'+fs+'</span></div>' : '';
-            ld=fs;
-            return sep+'<div style="padding:5px 0;border-bottom:1px solid #1e293b;display:flex;gap:8px;"><span style="color:#3b82f6;font-size:11px;font-weight:600;flex-shrink:0;">'+m.de+'</span><span style="color:#e2e8f0;font-size:13px;flex:1;word-break:break-word;">'+m.texto+'</span><span style="color:#475569;font-size:10px;flex-shrink:0;">'+hora+'</span></div>';
-          }).join('');
-          if (msgs.length <= 2) return renderAll(msgs);
-          const ultimos = msgs.slice(-2);
-          const restantes = msgs.length - 2;
-          return '<div id="'+colId+'">'+renderAll(ultimos)+'</div>'+
-            '<div id="'+hidId+'" style="display:none;">'+renderAll(msgs)+'</div>'+
-            '<button onclick="document.getElementById(''+colId+'').style.display='none';document.getElementById(''+hidId+'').style.display='block';this.style.display='none';document.getElementById('btn_c_'+uid+'').style.display='block';" style="width:100%;margin-top:6px;background:#0f172a;border:1px solid #1e3a5f;border-radius:6px;padding:4px;color:#64748b;font-size:11px;cursor:pointer;">&#9650; Ver '+restantes+' anteriores</button>'+
-            '<button id="btn_c_'+uid+'" onclick="document.getElementById(''+colId+'').style.display='block';document.getElementById(''+hidId+'').style.display='none';this.style.display='none';" style="display:none;width:100%;margin-top:6px;background:#0f172a;border:1px solid #1e3a5f;border-radius:6px;padding:4px;color:#64748b;font-size:11px;cursor:pointer;">&#9660; Colapsar</button>';
-        };
+          let _adminMsgN = 0;
+          const renderMsgs = function(msgs) {
+            if (!msgs.length) return "<p style='color:#475569;font-size:12px;'>Sin mensajes recientes</p>";
+            let ld = "";
+            const renderRow = function(m) {
+              const fo = new Date(m.fecha);
+              const fs = fo.toLocaleDateString("es-AR",{weekday:"long",day:"numeric",month:"long"});
+              const hora = fo.toLocaleString("es-AR",{hour:"2-digit",minute:"2-digit",day:"2-digit",month:"2-digit"});
+              const sep = fs!==ld ? "<div style='text-align:center;margin:6px 0 4px;'><span style='background:#1e293b;color:#64748b;font-size:10px;padding:2px 8px;border-radius:10px;'>"+fs+"</span></div>" : "";
+              ld=fs;
+              return sep+"<div style='padding:5px 0;border-bottom:1px solid #1e293b;display:flex;gap:8px;'><span style='color:#3b82f6;font-size:11px;font-weight:600;flex-shrink:0;'>"+m.de+"</span><span style='color:#e2e8f0;font-size:13px;flex:1;word-break:break-word;'>"+m.texto+"</span><span style='color:#475569;font-size:10px;flex-shrink:0;'>"+hora+"</span></div>";
+            };
+            const all = msgs.map(renderRow).join("");
+            if (msgs.length <= 2) return all;
+            _adminMsgN++;
+            const uid = "ac"+_adminMsgN;
+            const restantes = msgs.length - 2;
+            const preview = msgs.slice(-2).map(renderRow).join("");
+            return "<div id='col_"+uid+"'>"+preview+"<button style='width:100%;margin-top:6px;background:#0f172a;border:1px solid #1e3a5f;border-radius:6px;padding:4px;color:#64748b;font-size:11px;cursor:pointer;' onclick='adminExpandMsg(this,"col_"+uid+"","hid_"+uid+"")'>&#9650; Ver "+restantes+" anteriores</button></div>"
+              +"<div id='hid_"+uid+"' style='display:none;'>"+all+"<button style='width:100%;margin-top:6px;background:#0f172a;border:1px solid #1e3a5f;border-radius:6px;padding:4px;color:#64748b;font-size:11px;cursor:pointer;' onclick='adminCollapseMsg(this,"col_"+uid+"","hid_"+uid+"")'>&#9660; Colapsar</button></div>";
+          };
+            if (msgs.length <= 2) return renderAll(msgs);
+            _adminMsgN++;
+            const uid = "ac"+_adminMsgN;
+            const restantes = msgs.length - 2;
+            return "<div id='col_"+uid+"'>"+renderAll(msgs.slice(-2))+"</div>"
+              +"<div id='hid_"+uid+"' style='display:none;'>"+renderAll(msgs)+"</div>"
+              +"<button onclick=\"document.getElementById('col_"+uid+"').style.display='none';document.getElementById('hid_"+uid+"').style.display='block';this.style.display='none';\" style='width:100%;margin-top:6px;background:#0f172a;border:1px solid #1e3a5f;border-radius:6px;padding:4px;color:#64748b;font-size:11px;cursor:pointer;'>&#9650; Ver "+restantes+" anteriores</button>";
+          };
 
         if (modo === 'privados') {
           const chats = data.chats || [];
@@ -2399,6 +2405,14 @@
       } catch(e) { lista.innerHTML = '<p style="color:#ef4444;">Error: '+e.message+'</p>'; }
     };
 
+    window.adminExpandMsg = function(btn, colId, hidId) {
+      document.getElementById(colId).style.display = "none";
+      document.getElementById(hidId).style.display = "block";
+    };
+    window.adminCollapseMsg = function(btn, colId, hidId) {
+      document.getElementById(hidId).style.display = "none";
+      document.getElementById(colId).style.display = "block";
+    };
     window.limpiarMensajes = async function() {
       const btn = overlay.querySelector("#btn-limpiar-msgs");
       const msg = overlay.querySelector("#limpiar-msg");
