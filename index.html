@@ -3011,18 +3011,25 @@
         const apodoRem = localStorage.getItem('apodo_' + m.de) || m.de;
         const fechaObj = new Date(m.fecha);
         const fechaStr = fechaObj.toLocaleDateString('es-AR', { weekday:'long', day:'numeric', month:'long' });
-        const hora = fechaObj.toLocaleTimeString("es-AR", { hour:"2-digit", minute:"2-digit" });
+        const hora = fechaObj.toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' });
         const sep = fechaStr !== _lastDateChat
           ? '<div style="text-align:center;margin:10px 0 6px;"><span style="background:var(--bg-page);color:var(--text-muted);font-size:11px;padding:3px 10px;border-radius:20px;">' + fechaStr + '</span></div>'
           : '';
         _lastDateChat = fechaStr;
-        return sep + `<div style="display:flex;justify-content:${esMio ? 'flex-end' : 'flex-start'};">
-          <div style="max-width:70%;background:${esMio ? '#1d4ed8' : 'var(--bg-page)'};color:${esMio ? 'white' : 'var(--text-main)'};padding:8px 12px;border-radius:${esMio ? '14px 14px 4px 14px' : '14px 14px 14px 4px'};font-size:14px;line-height:1.4;word-break:break-word;overflow-wrap:anywhere;">
-            ${(!esMio && chatActivo?.esGrupo) ? `<div style="font-size:11px;font-weight:600;color:#93c5fd;margin-bottom:3px;">${apodoRem}</div>` : ''}
-            ${m.texto}
-            <div style="font-size:10px;opacity:0.6;margin-top:3px;text-align:right;">${hora}</div>
-          </div>
-        </div>`;
+        const bg = esMio ? '#1d4ed8' : 'var(--bg-page)';
+        const col = esMio ? 'white' : 'var(--text-main)';
+        const rad = esMio ? '14px 14px 4px 14px' : '14px 14px 14px 4px';
+        const just = esMio ? 'flex-end' : 'flex-start';
+        const remNombre = (!esMio && chatActivo && chatActivo.esGrupo)
+          ? '<div style="font-size:11px;font-weight:600;color:#93c5fd;margin-bottom:3px;">' + apodoRem + '</div>'
+          : '';
+        return sep +
+          '<div style="display:flex;justify-content:' + just + ';">' +
+          '<div style="max-width:70%;background:' + bg + ';color:' + col + ';padding:8px 12px;border-radius:' + rad + ';font-size:14px;line-height:1.4;word-break:break-word;overflow-wrap:anywhere;">' +
+          remNombre +
+          m.texto +
+          '<div style="font-size:10px;opacity:0.6;margin-top:3px;text-align:right;">' + hora + '</div>' +
+          '</div></div>';
       }).join('');
       if (wasAtBottom) {
         lista.scrollTop = lista.scrollHeight;
