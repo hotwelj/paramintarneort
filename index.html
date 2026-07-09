@@ -3067,7 +3067,9 @@
         lista.insertAdjacentHTML('afterbegin', renderMsgs(msgs));
         lista.scrollTop = lista.scrollHeight - scrollBottom;
       } else {
-        lista.innerHTML = renderMsgs(msgs);
+        const htmlMsgs = renderMsgs(msgs);
+        console.log('renderMsgs chars:', htmlMsgs.length, 'lista existe:', !!lista);
+        lista.innerHTML = htmlMsgs;
         lista.scrollTop = lista.scrollHeight;
       }
 
