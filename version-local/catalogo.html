@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aura Perfumes (versión local de prueba)</title>
+<link rel="stylesheet" href="../public/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">AURA <span>PERFUMES</span></div>
+  <a href="admin.html" class="link-btn">Admin (local)</a>
+</header>
+
+<section class="hero">
+  <h1>Versión local de prueba<br>(sin conexión a Cloudflare)</h1>
+  <p>Todo lo que cargues acá se guarda solo en este navegador, para que pruebes cómo se ve y funciona antes de publicar de verdad.</p>
+</section>
+
+<section class="filters">
+  <input type="text" id="buscar" placeholder="Buscar por nombre o marca...">
+  <select id="filtroMarca"><option value="">Todas las marcas</option></select>
+  <select id="filtroCategoria"><option value="">Todas las categorías</option></select>
+  <select id="filtroStock">
+    <option value="">Todo</option>
+    <option value="si">Con stock</option>
+    <option value="no">Sin stock</option>
+  </select>
+</section>
+
+<div id="catalogo" class="catalog"></div>
+
+<script>
+  const WHATSAPP_LINK = "https://w.app/vq6rso";
+  const MENSAJE_WHATSAPP = "Hola, ando buscando el (PERFUME), a cuanto está?";
+
+  function leerPerfumes() {
+    return JSON.parse(localStorage.getItem("auraPerfumesLocal") || "[]");
+  }
+
+  let TODOS = leerPerfumes();
+
+  function poblarMarcas(lista) {
+    const sel = document.getElementById("filtroMarca");
+    [...new Set(lista.map((p) => p.marca))].sort().forEach((m) => {
+      const opt = document.createElement("option");
+      opt.value = m; opt.textContent = m; sel.appendChild(opt);
+    });
+  }
+
+  function poblarCategorias(lista) {
+    const sel = document.getElementById("filtroCategoria");
+    [...new Set(lista.map((p) => p.categoria).filter(Boolean))].sort().forEach((c) => {
+      const opt = document.createElement("option");
+      opt.value = c; opt.textContent = c; sel.appendChild(opt);
+    });
+  }
+
+  function fotosDe(p) {
+    if (Array.isArray(p.imagenes) && p.imagenes.length > 0) return p.imagenes;
+    if (p.imagenUrl) return [p.imagenUrl];
+    return [];
+  }
+
+  function cardHtml(p) {
+    const tieneDescuento = p.precioDescuento != null && p.precioDescuento < p.precio;
+    const precioMostrar = tieneDescuento ? p.precioDescuento : p.precio;
+    const mensaje = encodeURIComponent(MENSAJE_WHATSAPP.replace("(PERFUME)", p.nombre));
+    const waLink = `${WHATSAPP_LINK}?text=${mensaje}`;
+    const fotos = fotosDe(p);
+    const primeraFoto = fotos[0] || "";
+    return `
+      <div class="card">
+        <div class="card-img">
+          ${primeraFoto ? `<img src="${primeraFoto}" alt="${p.nombre}">` : ""}
+          <span class="card-badge ${p.enStock ? "si-hay" : "no-hay"}">${p.enStock ? "Con stock" : "Sin stock"}</span>
+          ${p.categoria ? `<span class="card-cat">${p.categoria}</span>` : ""}
+        </div>
+        <div class="card-body">
+          <div class="card-marca">${p.marca}</div>
+          <div class="card-nombre">${p.nombre}</div>
+          <div class="card-precio">
+            <span class="precio-actual">$${precioMostrar.toLocaleString("es-AR")}</span>
+            ${tieneDescuento ? `<span class="precio-tachado">$${p.precio.toLocaleString("es-AR")}</span>` : ""}
+          </div>
+          <div class="card-actions">
+            <a class="btn btn-whatsapp" href="${waLink}" target="_blank" rel="noopener">Consultar</a>
+            ${p.infoUrl ? `<a class="btn btn-info" href="${p.infoUrl}" target="_blank" rel="noopener">Más info</a>` : ""}
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function render(lista) {
+    const cont = document.getElementById("catalogo");
+    cont.innerHTML = lista.length
+      ? lista.map(cardHtml).join("")
+      : `<div class="empty-state">Todavía no cargaste perfumes. Andá al Admin (local) para agregar el primero.</div>`;
+  }
+
+  function aplicarFiltros() {
+    const q = document.getElementById("buscar").value.trim().toLowerCase();
+    const marca = document.getElementById("filtroMarca").value;
+    const categoria = document.getElementById("filtroCategoria").value;
+    const stock = document.getElementById("filtroStock").value;
+    render(TODOS.filter((p) => {
+      const coincideTexto = !q || p.nombre.toLowerCase().includes(q) || p.marca.toLowerCase().includes(q);
+      const coincideMarca = !marca || p.marca === marca;
+      const coincideCategoria = !categoria || p.categoria === categoria;
+      const coincideStock = !stock || (stock === "si" && p.enStock) || (stock === "no" && !p.enStock);
+      return coincideTexto && coincideMarca && coincideCategoria && coincideStock;
+    }));
+  }
+
+  document.getElementById("buscar").addEventListener("input", aplicarFiltros);
+  document.getElementById("filtroMarca").addEventListener("change", aplicarFiltros);
+  document.getElementById("filtroCategoria").addEventListener("change", aplicarFiltros);
+  document.getElementById("filtroStock").addEventListener("change", aplicarFiltros);
+
+  poblarMarcas(TODOS);
+  poblarCategorias(TODOS);
+  render(TODOS);
+</script>
+</body>
+</html>

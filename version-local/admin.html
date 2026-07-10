@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin local · Aura Perfumes</title>
+<link rel="stylesheet" href="../public/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">AURA <span>ADMIN LOCAL</span></div>
+  <a href="catalogo.html" class="link-btn">Ver catálogo</a>
+</header>
+
+<div class="admin-wrap">
+  <div class="msg ok">Esta es la versión de PRUEBA: todo se guarda solo en este navegador (no se sube a internet). Sirve para ver cómo va a quedar antes de publicar la versión real.</div>
+
+  <div id="formMsg"></div>
+  <h2 id="formTitle" style="margin:20px 0;">Nuevo perfume</h2>
+
+  <div class="field">
+    <label>Fotos (podés subir varias)</label>
+    <input type="file" id="imagenInput" accept="image/*" multiple>
+    <div class="galeria-thumbs" id="galeriaThumbs"></div>
+  </div>
+
+  <div class="field-row">
+    <div class="field"><label>Nombre</label><input type="text" id="nombre" placeholder="Bleu de Chanel"></div>
+    <div class="field"><label>Marca</label><input type="text" id="marca" placeholder="Chanel"></div>
+  </div>
+
+  <div class="field-row">
+    <div class="field">
+      <label>Categoría</label>
+      <select id="categoria">
+        <option value="">Sin categoría</option>
+        <option>Florales</option><option>Amaderadas</option><option>Orientales</option>
+        <option>Citricas</option><option>Acuaticas</option><option>Aromaticas</option>
+        <option>Cueros</option><option>Gourmand</option>
+      </select>
+    </div>
+    <div class="field"><label>Precio</label><input type="number" id="precio" placeholder="45000"></div>
+  </div>
+
+  <div class="field"><label>Precio con descuento (opcional)</label><input type="number" id="precioDescuento" placeholder="38000"></div>
+
+  <div class="checkbox-row">
+    <input type="checkbox" id="enStock" checked>
+    <label for="enStock" style="text-transform:none;letter-spacing:normal;">Hay stock</label>
+  </div>
+
+  <div class="field"><label>Descripción</label><textarea id="descripcion" rows="3"></textarea></div>
+  <div class="field"><label>Link a más info</label><input type="text" id="infoUrl" placeholder="https://www.fragrantica.com/..."></div>
+
+  <button class="btn-primary" id="btnGuardar">Guardar perfume</button>
+  <button class="link-btn" id="btnCancelarEdicion" style="display:none;">Cancelar edición</button>
+  <button class="link-btn danger" id="btnLimpiarTodo" style="float:right;">Borrar todos los datos de prueba</button>
+
+  <hr style="border-color:var(--line);margin:40px 0;">
+  <h2 style="margin-bottom:10px;">Perfumes cargados</h2>
+  <div id="lista"></div>
+</div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  let imagenesSubidas = [];
+  let editandoId = null;
+
+  function leer() { return JSON.parse(localStorage.getItem("auraPerfumesLocal") || "[]"); }
+  function guardarTodo(lista) { localStorage.setItem("auraPerfumesLocal", JSON.stringify(lista)); }
+
+  function mostrarMsg(texto, tipo) {
+    $("formMsg").innerHTML = texto ? `<div class="msg ${tipo}">${texto}</div>` : "";
+  }
+
+  function comprimirImagen(file, maxWidth = 700, calidad = 0.75) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        img.onload = () => {
+          const escala = Math.min(1, maxWidth / img.width);
+          const w = Math.round(img.width * escala);
+          const h = Math.round(img.height * escala);
+          const canvas = document.createElement("canvas");
+          canvas.width = w; canvas.height = h;
+          canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL("image/jpeg", calidad));
+        };
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function renderGaleriaThumbs() {
+    $("galeriaThumbs").innerHTML = imagenesSubidas.map((url, i) => `
+      <div class="galeria-thumb"><img src="${url}"><button data-i="${i}">×</button></div>
+    `).join("");
+    document.querySelectorAll(".galeria-thumb button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        imagenesSubidas.splice(parseInt(btn.dataset.i, 10), 1);
+        renderGaleriaThumbs();
+      });
+    });
+  }
+
+  $("imagenInput").addEventListener("change", async (e) => {
+    const files = Array.from(e.target.files);
+    for (const file of files) {
+      try {
+        const dataUrl = await comprimirImagen(file);
+        imagenesSubidas.push(dataUrl);
+        renderGaleriaThumbs();
+      } catch (err) {
+        mostrarMsg("No se pudo procesar una imagen.", "error");
+      }
+    }
+    $("imagenInput").value = "";
+  });
+
+  function limpiarForm() {
+    $("nombre").value = ""; $("marca").value = ""; $("categoria").value = "";
+    $("precio").value = ""; $("precioDescuento").value = ""; $("enStock").checked = true;
+    $("descripcion").value = ""; $("infoUrl").value = ""; $("imagenInput").value = "";
+    imagenesSubidas = []; renderGaleriaThumbs();
+    editandoId = null;
+    $("formTitle").textContent = "Nuevo perfume";
+    $("btnCancelarEdicion").style.display = "none";
+  }
+  $("btnCancelarEdicion").addEventListener("click", limpiarForm);
+
+  $("btnGuardar").addEventListener("click", () => {
+    const nombre = $("nombre").value.trim();
+    const marca = $("marca").value.trim();
+    const precio = parseFloat($("precio").value);
+    if (!nombre || !marca || isNaN(precio)) {
+      mostrarMsg("Completá al menos nombre, marca y precio.", "error");
+      return;
+    }
+    const lista = leer();
+    const datos = {
+      id: editandoId || Date.now(),
+      nombre, marca,
+      categoria: $("categoria").value || null,
+      precio,
+      precioDescuento: $("precioDescuento").value ? parseFloat($("precioDescuento").value) : null,
+      enStock: $("enStock").checked,
+      descripcion: $("descripcion").value.trim(),
+      infoUrl: $("infoUrl").value.trim(),
+      imagenUrl: imagenesSubidas[0] || null,
+      imagenes: imagenesSubidas,
+    };
+    const idx = lista.findIndex((p) => p.id === editandoId);
+    if (idx >= 0) lista[idx] = datos; else lista.unshift(datos);
+    guardarTodo(lista);
+    mostrarMsg("Guardado ✓ (local)", "ok");
+    limpiarForm();
+    cargarLista();
+  });
+
+  function itemHtml(p) {
+    const foto = (p.imagenes && p.imagenes[0]) || p.imagenUrl || "";
+    return `
+      <div class="admin-list-item">
+        <img src="${foto}" onerror="this.style.opacity=0">
+        <div class="admin-list-info">
+          <div class="nombre">${p.nombre}</div>
+          <div class="meta">${p.marca}${p.categoria ? " · " + p.categoria : ""} · $${p.precio} ${p.enStock ? "· con stock" : "· sin stock"}</div>
+        </div>
+        <button class="badge-duplicar" data-dup="${p.id}">Duplicar</button>
+        <button class="link-btn" data-edit="${p.id}">Editar</button>
+        <button class="link-btn danger" data-del="${p.id}">Borrar</button>
+      </div>`;
+  }
+
+  function cargarLista() {
+    const lista = leer();
+    $("lista").innerHTML = lista.map(itemHtml).join("") || `<p style="color:var(--muted)">Todavía no cargaste ningún perfume.</p>`;
+
+    document.querySelectorAll("[data-edit]").forEach((b) => b.addEventListener("click", () => {
+      const p = lista.find((x) => x.id == b.dataset.edit);
+      editandoId = p.id;
+      $("nombre").value = p.nombre; $("marca").value = p.marca; $("categoria").value = p.categoria || "";
+      $("precio").value = p.precio; $("precioDescuento").value = p.precioDescuento ?? "";
+      $("enStock").checked = p.enStock; $("descripcion").value = p.descripcion ?? ""; $("infoUrl").value = p.infoUrl ?? "";
+      imagenesSubidas = (p.imagenes && p.imagenes.length) ? [...p.imagenes] : (p.imagenUrl ? [p.imagenUrl] : []);
+      renderGaleriaThumbs();
+      $("formTitle").textContent = `Editando: ${p.nombre}`;
+      $("btnCancelarEdicion").style.display = "inline-block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }));
+
+    document.querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", () => {
+      if (!confirm("¿Borrar este perfume de prueba?")) return;
+      guardarTodo(leer().filter((x) => x.id != b.dataset.del));
+      cargarLista();
+    }));
+
+    document.querySelectorAll("[data-dup]").forEach((b) => b.addEventListener("click", () => {
+      const l = leer();
+      const p = l.find((x) => x.id == b.dataset.dup);
+      l.unshift({ ...p, id: Date.now(), nombre: p.nombre + " (copia)" });
+      guardarTodo(l);
+      cargarLista();
+    }));
+  }
+
+  $("btnLimpiarTodo").addEventListener("click", () => {
+    if (!confirm("Esto borra TODOS los perfumes de prueba de este navegador. ¿Seguro?")) return;
+    localStorage.removeItem("auraPerfumesLocal");
+    cargarLista();
+  });
+
+  cargarLista();
+</script>
+</body>
+</html>

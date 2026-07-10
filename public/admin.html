@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin · Etérea Parfums</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="128x128" href="favicon-128.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand-wrap">
+    <img src="favicon.png" alt="Etérea Parfums" class="header-logo">
+    <div class="brand">ETÉREA <span>admin</span></div>
+  </div>
+  <button class="link-btn" id="btnLogout" style="display:none">Cerrar sesión</button>
+</header>
+
+<!-- LOGIN -->
+<div id="loginBox" class="card admin-login">
+  <h2 style="margin-bottom:20px;">Ingresar</h2>
+  <div id="loginMsg"></div>
+  <div class="field">
+    <label>Contraseña</label>
+    <input type="password" id="password" placeholder="••••••••">
+  </div>
+  <button class="btn-primary" id="btnLogin" style="width:100%;">Entrar</button>
+</div>
+
+<!-- PANEL -->
+<div id="panel" class="admin-wrap" style="display:none;">
+
+  <div class="admin-tabs">
+    <button class="admin-tab activo" id="tabPerfumes">Perfumes</button>
+    <button class="admin-tab" id="tabStats">Estadísticas</button>
+    <button class="admin-tab" id="tabConfig">Sitio</button>
+  </div>
+
+  <!-- TAB PERFUMES -->
+  <div id="vistaPerfumes">
+    <div id="formMsg"></div>
+
+    <h2 id="formTitle" style="margin-bottom:20px;">Nuevo perfume</h2>
+
+    <div class="field">
+      <label>Fotos (arrastrá y soltá, o hacé clic — podés subir varias)</label>
+      <div class="drop-zone" id="dropZone">
+        Arrastrá las fotos acá, o hacé clic para elegirlas
+        <input type="file" id="imagenInput" accept="image/*" multiple>
+      </div>
+      <div class="galeria-thumbs" id="galeriaThumbs"></div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Nombre</label>
+        <input type="text" id="nombre" placeholder="Ej: Oud Royal">
+      </div>
+      <div class="field">
+        <label>Marca</label>
+        <input type="text" id="marca" placeholder="Ej: Lattafa">
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Categoría</label>
+        <select id="categoria">
+          <option value="">Sin categoría</option>
+        </select>
+        <input type="text" id="categoriaOtra" placeholder="Escribí la familia nueva..." style="display:none; margin-top:8px;">
+      </div>
+      <div class="field">
+        <label>Precio</label>
+        <input type="number" id="precio" placeholder="45000">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Precio con descuento (opcional)</label>
+      <input type="number" id="precioDescuento" placeholder="38000">
+    </div>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="enStock" checked>
+      <label for="enStock" style="text-transform:none;letter-spacing:normal;">Hay stock</label>
+    </div>
+
+    <div class="field">
+      <label>Notas de salida (primera impresión)</label>
+      <div class="tags-input-wrap" id="tagsWrapSalida">
+        <input type="text" id="notaInputSalida" placeholder="Ej: cardamomo, bergamota...">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Notas de corazón (una vez asentado)</label>
+      <div class="tags-input-wrap" id="tagsWrapCorazon">
+        <input type="text" id="notaInputCorazon" placeholder="Ej: pimienta de Jamaica, rosa...">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Notas de fondo (lo que queda al final)</label>
+      <div class="tags-input-wrap" id="tagsWrapFondo">
+        <input type="text" id="notaInputFondo" placeholder="Ej: vainilla, pachulí, ládano...">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Descripción</label>
+      <textarea id="descripcion" rows="3" placeholder="Familia olfativa, ocasión de uso, duración..."></textarea>
+      <button type="button" class="link-btn" id="btnGenerarDescripcion" style="align-self:flex-start;">✨ Generar con IA</button>
+    </div>
+
+    <div class="field">
+      <label>Link a más info (Fragantica, etc.)</label>
+      <input type="text" id="infoUrl" placeholder="https://www.fragrantica.com/...">
+    </div>
+
+    <button class="btn-primary" id="btnGuardar">Guardar perfume</button>
+    <button class="link-btn" id="btnCancelarEdicion" style="display:none;">Cancelar edición</button>
+
+    <hr style="border-color:var(--line);margin:40px 0;">
+
+    <h2 style="margin-bottom:10px;">Perfumes cargados</h2>
+    <div id="lista"></div>
+  </div>
+
+  <!-- TAB STATS -->
+  <div id="vistaStats" style="display:none;">
+    <div class="stats-resumen">
+      <div class="stats-box">
+        <div class="num" id="statVistas">0</div>
+        <div class="label">Vistas totales</div>
+      </div>
+      <div class="stats-box">
+        <div class="num" id="statConsultas">0</div>
+        <div class="label">Consultas totales</div>
+      </div>
+    </div>
+    <h2 style="margin-bottom:14px;">Ranking por perfume</h2>
+    <table class="stats-tabla">
+      <thead>
+        <tr><th>Perfume</th><th>Vistas</th><th>Consultas</th></tr>
+      </thead>
+      <tbody id="statsTablaBody"></tbody>
+    </table>
+  </div>
+
+  <!-- TAB CONFIGURACIÓN DEL SITIO -->
+  <div id="vistaConfig" style="display:none;">
+    <div id="configMsg"></div>
+
+    <h2 style="margin-bottom:20px;">Logo</h2>
+    <div class="field">
+      <label>Logo del sitio</label>
+      <img id="configLogoPreview" src="favicon.png" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin-bottom:10px;display:block;">
+      <input type="file" id="configLogoInput" accept="image/*">
+    </div>
+
+    <h2 style="margin:30px 0 20px;">Contacto</h2>
+    <div class="field">
+      <label>Número de WhatsApp (código de país, sin +, sin espacios)</label>
+      <input type="text" id="configWhatsappNumero" placeholder="5491122334455">
+    </div>
+    <div class="field">
+      <label>Mensaje de WhatsApp (usá (PERFUME) donde va el nombre)</label>
+      <input type="text" id="configWhatsappMensaje" placeholder="Hola, ando buscando el (PERFUME), a cuanto está?">
+    </div>
+    <div class="field">
+      <label>Email de contacto</label>
+      <input type="text" id="configEmail" placeholder="contacto@tudominio.com">
+    </div>
+    <div class="field">
+      <label>Link de Instagram</label>
+      <input type="text" id="configInstagram" placeholder="https://instagram.com/tuusuario">
+    </div>
+
+    <h2 style="margin:30px 0 20px;">Textos de la portada</h2>
+    <div class="field">
+      <label>Frase pequeña arriba del título</label>
+      <input type="text" id="configHeroEyebrow" placeholder="Oud · Ámbar · Incienso">
+    </div>
+    <div class="field">
+      <label>Título principal</label>
+      <textarea id="configHeroTitulo" rows="2"></textarea>
+    </div>
+    <div class="field">
+      <label>Párrafo debajo del título</label>
+      <textarea id="configHeroParrafo" rows="3"></textarea>
+    </div>
+    <div class="field">
+      <label>Frase corta del footer</label>
+      <input type="text" id="configFooterTagline" placeholder="Perfumería árabe importada...">
+    </div>
+
+    <h2 style="margin:30px 0 20px;">Colores</h2>
+    <div class="field-row">
+      <div class="field">
+        <label>Color principal</label>
+        <input type="color" id="configColorPrincipal" style="height:44px;padding:4px;">
+      </div>
+      <div class="field">
+        <label>Color secundario (más claro)</label>
+        <input type="color" id="configColorSecundario" style="height:44px;padding:4px;">
+      </div>
+    </div>
+
+    <button class="btn-primary" id="btnGuardarConfig">Guardar cambios</button>
+  </div>
+
+</div>
+
+<script>
+  const API_URL = "https://perfumes-admin.simonabulafia.workers.dev";
+</script>
+<script src="admin.js"></script>
+</body>
+</html>

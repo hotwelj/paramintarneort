@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Etérea Parfums — Perfumería árabe</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="128x128" href="favicon-128.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand-wrap">
+    <img src="favicon.png" alt="Etérea Parfums" class="header-logo" id="headerLogo">
+    <div class="brand">ETÉREA <span>parfums</span></div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-text">
+    <span class="eyebrow" id="heroEyebrow">Oud · Ámbar · Incienso</span>
+    <h1 id="heroTitulo">Fragancias de Oriente, con la intensidad de la perfumería árabe.</h1>
+    <p id="heroParrafo">Trabajamos con esencias importadas de casas árabes reconocidas por su fijación e intensidad: oud, ámbar, azafrán, incienso. Si no sabés cuál elegir, escribinos por WhatsApp y te ayudamos a decidir.</p>
+  </div>
+  <div class="hero-emblem-wrap">
+    <div class="hero-emblem">
+      <svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+        <g class="capa-externa">
+          <polygon class="rombo-fill" points="120,25 187,53 215,120 187,187 120,215 53,187 25,120 53,53"/>
+          <polygon class="rombo" points="120,25 187,53 215,120 187,187 120,215 53,187 25,120 53,53"/>
+        </g>
+        <g class="capa-interna">
+          <polygon class="rombo" points="120,60 162,78 180,120 162,162 120,180 78,162 60,120 78,78"/>
+          <polygon class="rombo" points="120,25 53,53 78,78"/>
+          <polygon class="rombo" points="120,25 187,53 162,78"/>
+          <polygon class="rombo" points="215,120 187,187 162,162"/>
+          <polygon class="rombo" points="215,120 187,53 162,78"/>
+          <polygon class="rombo" points="120,215 53,187 78,162"/>
+          <polygon class="rombo" points="120,215 187,187 162,162"/>
+          <polygon class="rombo" points="25,120 53,187 78,162"/>
+          <polygon class="rombo" points="25,120 53,53 78,78"/>
+        </g>
+        <circle class="punto" cx="120" cy="120" r="4"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<div class="lattice-divider"></div>
+
+<section class="ia-recomendador">
+  <span class="ia-titulo">✨ Contanos qué buscás y te sugerimos</span>
+  <div class="ia-input-row">
+    <input type="text" id="iaConsulta" placeholder="Ej: algo dulce, para la noche, que no sea muy fuerte...">
+    <button class="btn-primary" id="iaBoton">Recomendame</button>
+  </div>
+  <div id="iaResultados"></div>
+</section>
+
+<section class="filters">
+  <input type="text" id="buscar" placeholder="Buscar por nombre o marca...">
+  <div class="filtro-aromas-wrap">
+    <input type="text" id="buscarAroma" placeholder="Aromas..." autocomplete="off">
+    <div class="aromas-sugerencias" id="aromasSugerencias"></div>
+  </div>
+  <select id="filtroMarca">
+    <option value="">Todas las marcas</option>
+  </select>
+  <select id="filtroCategoria">
+    <option value="">Todas las familias</option>
+  </select>
+  <select id="filtroStock">
+    <option value="">Todo</option>
+    <option value="si">Con stock</option>
+    <option value="no">Sin stock</option>
+  </select>
+</section>
+
+<div class="aromas-activos-fila" id="aromasActivosFila"></div>
+
+<div id="catalogo" class="catalog"></div>
+
+<div id="modalOverlay"></div>
+
+<footer class="site-footer">
+  <div class="footer-top">
+    <div class="footer-brand">
+      <img src="favicon.png" alt="Etérea Parfums" class="footer-logo" id="footerLogo">
+      <div class="brand">ETÉREA <span>parfums</span></div>
+      <p class="footer-tagline" id="footerTagline">Perfumería árabe importada. Oud, ámbar, azafrán, incienso.</p>
+    </div>
+    <div class="footer-col">
+      <span class="footer-titulo">Contacto</span>
+      <a id="footerWhatsapp" href="#" target="_blank" rel="noopener">WhatsApp</a>
+      <a id="footerEmail" href="#" style="display:none;">Mail</a>
+      <a id="footerInstagram" href="#" target="_blank" rel="noopener" style="display:none;">Instagram</a>
+    </div>
+    <div class="footer-col">
+      <span class="footer-titulo">Info</span>
+      <span class="footer-texto">Envíos a todo el país</span>
+      <span class="footer-texto">Consultas por stock y precios vía WhatsApp</span>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© <span id="footerAnio"></span> Etérea Parfums</span>
+  </div>
+</footer>
+
+<script>
+  // URL del worker de la API (esto sí es fijo, no se edita desde el admin)
+  const API_URL = "https://perfumes-admin.simonabulafia.workers.dev";
+</script>
+<script>
+  document.getElementById("footerAnio").textContent = new Date().getFullYear();
+</script>
+<script src="catalog.js"></script>
+</body>
+</html>
