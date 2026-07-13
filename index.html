@@ -2047,7 +2047,10 @@
           <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:20px;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
               <h2 style="color:#94a3b8;font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin:0;">Gestión de juegos</h2>
-              <button onclick="mostrarFormNuevoJuego()" style="background:#3b82f6;color:white;border:none;border-radius:8px;padding:6px 14px;cursor:pointer;font-size:12px;font-weight:600;">+ Nuevo juego</button>
+              <div style="display:flex;gap:6px;">
+                <button onclick="mostrarFormNuevoJuego()" style="background:#3b82f6;color:white;border:none;border-radius:8px;padding:6px 14px;cursor:pointer;font-size:12px;font-weight:600;">+ Nuevo juego</button>
+                <button onclick="mostrarFormPlantilla()" style="background:#334155;color:#94a3b8;border:none;border-radius:8px;padding:6px 14px;cursor:pointer;font-size:12px;font-weight:600;">📋 Pegar plantilla</button>
+              </div>
             </div>
             <!-- Formulario nuevo/editar juego -->
             <div id="admin-juego-form" style="display:none;background:#0f172a;border:1px solid #1e3a5f;border-radius:10px;padding:16px;margin-bottom:16px;">
@@ -2092,6 +2095,25 @@
                 <button onclick="guardarJuegoAdmin()" style="background:#22c55e;color:white;border:none;border-radius:8px;padding:8px 20px;cursor:pointer;font-size:13px;font-weight:600;">💾 Guardar</button>
                 <button onclick="document.getElementById('admin-juego-form').style.display='none'" style="background:#334155;color:#94a3b8;border:none;border-radius:8px;padding:8px 20px;cursor:pointer;font-size:13px;">Cancelar</button>
                 <span id="admin-form-msg" style="color:#22c55e;font-size:13px;align-self:center;"></span>
+              </div>
+            </div>
+            <!-- Plantilla pegada -->
+            <div id="admin-plantilla-form" style="display:none;background:#0f172a;border:1px solid #1e3a5f;border-radius:10px;padding:16px;margin-bottom:16px;">
+              <h3 style="color:#93c5fd;font-size:13px;margin:0 0 8px;">Pegar plantilla</h3>
+              <p style="color:#64748b;font-size:11px;margin:0 0 10px;">Pegá el mensaje que te manda Claude con el formato de juego nuevo:</p>
+              <pre style="background:#1e293b;color:#64748b;font-size:11px;padding:10px;border-radius:6px;margin-bottom:10px;line-height:1.6;">Nombre: 
+DL ID: 
+Imagen: /images/nombre.webp
+Peso: 
+Categoría: liviano | normal | pesado | muypesado
+Géneros: 
+Descripción: 
+Link de descarga: https://github.com/...</pre>
+              <textarea id="admin-plantilla-input" rows="8" placeholder="Pegá acá el mensaje de Claude..." style="width:100%;padding:10px;background:#1e293b;border:1px solid #334155;border-radius:8px;color:#f1f5f9;font-size:12px;font-family:monospace;box-sizing:border-box;resize:vertical;margin-bottom:10px;"></textarea>
+              <div style="display:flex;gap:8px;">
+                <button onclick="procesarPlantilla()" style="background:#22c55e;color:white;border:none;border-radius:8px;padding:8px 20px;cursor:pointer;font-size:13px;font-weight:600;">✨ Procesar</button>
+                <button onclick="document.getElementById('admin-plantilla-form').style.display='none'" style="background:#334155;color:#94a3b8;border:none;border-radius:8px;padding:8px 20px;cursor:pointer;font-size:13px;">Cancelar</button>
+                <span id="admin-plantilla-msg" style="color:#22c55e;font-size:13px;align-self:center;"></span>
               </div>
             </div>
             <!-- Lista de juegos -->
@@ -2738,6 +2760,49 @@
         j.name.toLowerCase().includes(q) || j.dl.toLowerCase().includes(q)
       );
       renderJuegosAdmin(filtered);
+    };
+
+    window.mostrarFormPlantilla = function() {
+      overlay.querySelector("#admin-plantilla-form").style.display = 'block';
+      overlay.querySelector("#admin-juego-form").style.display = 'none';
+      overlay.querySelector("#admin-plantilla-input").value = '';
+      overlay.querySelector("#admin-plantilla-msg").textContent = '';
+    };
+
+    window.procesarPlantilla = function() {
+      const txt = overlay.querySelector("#admin-plantilla-input").value;
+      const msg = overlay.querySelector("#admin-plantilla-msg");
+      const get = (key) => {
+        const m = txt.match(new RegExp(key + ':\s*(.+)', 'i'));
+        return m ? m[1].trim() : '';
+      };
+      const name = get('Nombre');
+      const dl = get('DL ID').toLowerCase().replace(/\s+/g, '-');
+      const img = get('Imagen');
+      const mb = get('Peso');
+      const catRaw = get('Catego[rí]?a').toLowerCase();
+      const genres = get('G[eé]neros').toLowerCase();
+      const desc = get('Descripci[oó]n');
+      if (!name || !dl) { msg.style.color='#ef4444'; msg.textContent = 'No se pudo parsear. Verificá el formato.'; return; }
+      const wcMap = { 'liviano':'weight-liviano', 'normal':'weight-normal', 'pesado':'weight-pesado', 'muypesado':'weight-muypesado', 'muy pesado':'weight-muypesado' };
+      const wc = wcMap[catRaw] || 'weight-liviano';
+      const wcEmojis = { 'weight-liviano':'🪶 Liviano', 'weight-normal':'⚡ Normal', 'weight-pesado':'📦 Pesado', 'weight-muypesado':'🏋 Muy pesado' };
+      // Rellenar el formulario manual con los datos parseados
+      overlay.querySelector("#form-name").value = name;
+      overlay.querySelector("#form-dl").value = dl;
+      overlay.querySelector("#form-dl").disabled = false;
+      overlay.querySelector("#form-desc").value = desc;
+      overlay.querySelector("#form-img").value = img;
+      overlay.querySelector("#form-mb").value = mb;
+      overlay.querySelector("#form-wc").value = wc;
+      overlay.querySelector("#form-genres").value = genres;
+      overlay.querySelector("#form-dl").disabled = false;
+      overlay.querySelector("#admin-form-titulo").textContent = "Nuevo juego (desde plantilla)";
+      overlay.querySelector("#admin-form-msg").textContent = '';
+      overlay.querySelector("#admin-plantilla-form").style.display = 'none';
+      overlay.querySelector("#admin-juego-form").style.display = 'block';
+      msg.style.color = '#22c55e';
+      msg.textContent = '✅ Datos cargados';
     };
 
     window.mostrarFormNuevoJuego = function() {
