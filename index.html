@@ -1064,6 +1064,20 @@
         </div>
         </div>
       </div>
+      
+      <div class="game-card" onclick="abrirModal(this)" data-name='Forager' data-desc='Minijuego de exploración y crafteo: recolectás recursos, construís estructuras y expandís tu isla en un loop adictivo.' data-img='/images/forager.png' data-dl='forager' data-weight-class='weight-liviano' data-weight-label='🪶 Liviano · 116MB' data-genres="sandbox clicker">
+        <img class="game-cover" src="/images/forager.png" alt="Forager" loading="lazy" onerror="this.style.display='none'">
+        <div class="game-card-body">
+          <div class="game-name-row"><p class="game-name">Forager</p><span class="weight-tag weight-liviano">🪶 Liviano · 116MB</span></div>
+          <p class="game-desc">Minijuego de exploración y crafteo: recolectás recursos, construís estructuras y expandís tu isla en un loop adictivo.</p>
+          <div class="game-tags"><span class="game-tag">Sandbox</span><span class="game-tag">Clicker</span></div>
+          <div class="card-rating" style="font-size:12px;color:#fbbf24;letter-spacing:1px;min-height:16px;margin-bottom:4px;"></div>
+          <div class="card-actions">
+          <button class="btn-download" onclick="event.stopPropagation(); descargar(this, 'forager')">⬇ Descargar</button>
+          <button class="fav-btn-inline" onclick="event.stopPropagation(); toggleFav(this)" title="Favorito">🤍</button>
+        </div>
+        </div>
+      </div>
       </div>
   </div>
 </div>
@@ -1899,6 +1913,7 @@
           <button id="tab-sugerencias" onclick="switchTab('sugerencias')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#1e293b;color:#94a3b8;">💬 Sugerencias <span id="sug-badge" style="display:none;background:#ef4444;color:white;font-size:11px;padding:1px 7px;border-radius:20px;margin-left:4px;"></span></button>
           <button id="tab-anuncios" onclick="switchTab('anuncios')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#1e293b;color:#94a3b8;">📢 Anuncios</button>
           <button id="tab-resenas" onclick="switchTab('resenas')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#1e293b;color:#94a3b8;">⭐ Reseñas</button>
+          <button id="tab-juegos" onclick="switchTab('juegos')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#1e293b;color:#94a3b8;">🎮 Juegos</button>
           <button id="tab-chats" onclick="switchTab('chats')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#1e293b;color:#94a3b8;">🗂 Chats</button>
           <button id="tab-storage" onclick="switchTab('storage')" style="flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:14px;background:#1e293b;color:#94a3b8;">🗄 Storage</button>
         </div>
@@ -1943,6 +1958,13 @@
               </div>
               <div id="admin-chats-lista" style="color:#94a3b8;font-size:13px;">Cargando...</div>
             </div>
+          </div>
+        </div>
+        <div id="panel-juegos" style="display:none;">
+          <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:20px;">
+            <h2 style="color:#94a3b8;font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px;">Gestión de juegos</h2>
+            <input id="admin-juegos-search" type="text" placeholder="Buscar juego..." oninput="filtrarJuegosAdmin()" style="width:100%;padding:10px 14px;background:#0f172a;border:1px solid #334155;border-radius:10px;color:#f1f5f9;font-size:14px;margin-bottom:14px;box-sizing:border-box;">
+            <div id="admin-juegos-lista" style="max-height:500px;overflow-y:auto;"></div>
           </div>
         </div>
 
@@ -2005,8 +2027,10 @@
       overlay.querySelector("#panel-resenas").style.display = tab === "resenas" ? "block" : "none";
       overlay.querySelector("#panel-storage").style.display = tab === "storage" ? "block" : "none";
       overlay.querySelector("#panel-chats").style.display = tab === "chats" ? "block" : "none";
+      overlay.querySelector("#panel-juegos").style.display = tab === "juegos" ? "block" : "none";
+      if (tab === "juegos") cargarJuegosAdmin();
       if (tab !== "chats") { const a=document.getElementById("chats-aviso");const c=document.getElementById("chats-contenido");if(a)a.style.display="block";if(c)c.style.display="none"; }
-      ["contras","sugerencias","anuncios","resenas","storage","chats"].forEach(t => {
+      ["contras","sugerencias","anuncios","resenas","storage","chats","juegos"].forEach(t => {
         const btn = overlay.querySelector(`#tab-${t}`);
         btn.style.background = tab === t ? "#3b82f6" : "#1e293b";
         btn.style.color = tab === t ? "white" : "#94a3b8";
@@ -2555,6 +2579,105 @@
         if (hid) hid.style.display = "none";
       }
     });
+    // ── GESTIÓN DE JUEGOS ──
+    const GENEROS_VALIDOS = ['accion','aventura','indie','humor','puzzle','roguelike','metroidvania','clicker','terror','estrategia','sandbox','simulacion'];
+    const PESOS_VALIDOS = [
+      {val:'weight-liviano', label:'🪶 Liviano'},
+      {val:'weight-normal', label:'⚡ Normal'},
+      {val:'weight-pesado', label:'📦 Pesado'},
+      {val:'weight-muypesado', label:'🏋 Muy pesado'},
+    ];
+
+    function cargarJuegosAdmin() {
+      const lista = overlay.querySelector("#admin-juegos-lista");
+      const cards = [...document.querySelectorAll(".game-card")];
+      window._adminJuegosCards = cards;
+      renderJuegosAdmin(cards);
+    }
+
+    window.filtrarJuegosAdmin = function() {
+      const q = overlay.querySelector("#admin-juegos-search").value.toLowerCase();
+      const cards = (window._adminJuegosCards || []).filter(c =>
+        c.dataset.name.toLowerCase().includes(q) || c.dataset.dl.toLowerCase().includes(q)
+      );
+      renderJuegosAdmin(cards);
+    };
+
+    function renderJuegosAdmin(cards) {
+      const lista = overlay.querySelector("#admin-juegos-lista");
+      if (!cards.length) { lista.innerHTML = '<p style="color:#64748b;">Sin resultados</p>'; return; }
+      lista.innerHTML = cards.map((c, i) => {
+        const name = c.dataset.name || '';
+        const dl = c.dataset.dl || '';
+        const wc = c.dataset.weightClass || 'weight-liviano';
+        const wl = c.dataset.weightLabel || '';
+        const genres = c.dataset.genres || '';
+        const mbMatch = wl.match(/[\d.,]+\s*[KMGT]?B/i);
+        const mb = mbMatch ? mbMatch[0] : '';
+        return '<div style="background:#0f172a;border:1px solid #1e3a5f;border-radius:10px;padding:14px;margin-bottom:10px;">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">' +
+          '<span style="color:#93c5fd;font-size:13px;font-weight:600;">' + name + '</span>' +
+          '<button onclick="eliminarJuegoAdmin(' + "'" + dl + "')" +
+          '" style="background:#7f1d1d;color:#fca5a5;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:11px;">🗑 Eliminar</button>' +
+          '</div>' +
+          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' +
+          '<div>' +
+          '<label style="color:#64748b;font-size:11px;">Nombre</label>' +
+          '<input data-field="name" data-dl="' + dl + '" value="' + name + '" style="width:100%;padding:6px 8px;background:#1e293b;border:1px solid #334155;border-radius:6px;color:#f1f5f9;font-size:12px;box-sizing:border-box;" oninput="updateCardField(this)">' +
+          '</div>' +
+          '<div>' +
+          '<label style="color:#64748b;font-size:11px;">Peso</label>' +
+          '<input data-field="mb" data-dl="' + dl + '" value="' + mb + '" style="width:100%;padding:6px 8px;background:#1e293b;border:1px solid #334155;border-radius:6px;color:#f1f5f9;font-size:12px;box-sizing:border-box;" oninput="updateCardField(this)" placeholder="ej: 328MB">' +
+          '</div>' +
+          '<div>' +
+          '<label style="color:#64748b;font-size:11px;">Categoría de peso</label>' +
+          '<select data-field="weightClass" data-dl="' + dl + '" style="width:100%;padding:6px 8px;background:#1e293b;border:1px solid #334155;border-radius:6px;color:#f1f5f9;font-size:12px;box-sizing:border-box;" onchange="updateCardField(this)">' +
+          PESOS_VALIDOS.map(p => '<option value="' + p.val + '"' + (wc === p.val ? ' selected' : '') + '>' + p.label + '</option>').join('') +
+          '</select>' +
+          '</div>' +
+          '<div>' +
+          '<label style="color:#64748b;font-size:11px;">Géneros (espacio entre c/u)</label>' +
+          '<input data-field="genres" data-dl="' + dl + '" value="' + genres + '" style="width:100%;padding:6px 8px;background:#1e293b;border:1px solid #334155;border-radius:6px;color:#f1f5f9;font-size:12px;box-sizing:border-box;" oninput="updateCardField(this)" placeholder="ej: accion aventura">' +
+          '</div>' +
+          '</div>' +
+          '</div>';
+      }).join('');
+    }
+
+    window.updateCardField = function(input) {
+      const dl = input.dataset.dl;
+      const field = input.dataset.field;
+      const val = input.value.trim();
+      const card = document.querySelector(".game-card[data-dl='" + dl + "']");
+      if (!card) return;
+      if (field === 'name') {
+        card.dataset.name = val;
+        const nameEl = card.querySelector('.game-name');
+        if (nameEl) nameEl.textContent = val;
+      } else if (field === 'weightClass') {
+        card.dataset.weightClass = val;
+        card.dataset.weightLabel = card.dataset.weightLabel.replace(/weight-\w+/, val);
+        card.querySelectorAll('.weight-tag').forEach(t => { t.className = 'weight-tag ' + val; });
+      } else if (field === 'mb') {
+        const wc = card.dataset.weightClass || 'weight-liviano';
+        const emoji = wc === 'weight-liviano' ? '🪶 Liviano' : wc === 'weight-normal' ? '⚡ Normal' : wc === 'weight-pesado' ? '📦 Pesado' : '🏋 Muy pesado';
+        const newLabel = emoji + ' · ' + val;
+        card.dataset.weightLabel = newLabel;
+        card.querySelectorAll('.weight-tag').forEach(t => { t.textContent = newLabel; });
+      } else if (field === 'genres') {
+        const invalidos = val.split(' ').filter(g => g && !GENEROS_VALIDOS.includes(g));
+        input.style.borderColor = invalidos.length ? '#ef4444' : '#334155';
+        if (!invalidos.length) card.dataset.genres = val;
+      }
+    };
+
+    window.eliminarJuegoAdmin = function(dl) {
+      if (!confirm('¿Eliminar "' + dl + '" de la grilla? Solo afecta la vista, no borra el link de Firestore.')) return;
+      const card = document.querySelector(".game-card[data-dl='" + dl + "']");
+      if (card) card.remove();
+      cargarJuegosAdmin();
+    };
+
     window.adminExpandMsg = function(btn, colId, hidId) {
       document.getElementById(colId).style.display = "none";
       document.getElementById(hidId).style.display = "block";
@@ -2582,6 +2705,10 @@
         msg.style.display = "block";
       }
       btn.disabled = false; btn.textContent = "🗑 Borrar todos los mensajes";
+      // Limpiar cache local para que el chat muestre vacío inmediatamente
+      if (typeof _msgsCache !== 'undefined') Object.keys(_msgsCache).forEach(k => delete _msgsCache[k]);
+      if (typeof _ultimoTimestamp !== 'undefined') Object.keys(_ultimoTimestamp).forEach(k => _ultimoTimestamp[k] = null);
+      if (typeof _msgsOffset !== 'undefined') Object.keys(_msgsOffset).forEach(k => delete _msgsOffset[k]);
     };
 
     window.eliminarResena = async function(id, btn) {
