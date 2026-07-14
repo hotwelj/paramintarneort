@@ -1454,7 +1454,10 @@
       const data = await res.json();
       if (!data.ok || !data.juegos || !data.juegos.length) {
         // Si falla Firestore, mostrar las cards estáticas del HTML
-        document.querySelectorAll('.game-card[data-static]').forEach(c => c.removeAttribute('data-static'));
+        document.querySelectorAll('.game-card[data-static]').forEach(c => {
+          c.removeAttribute('data-static');
+          c.style.display = '';
+        });
         document.getElementById('cards-loading')?.remove();
         initFavBtns(); updateCounts(); filterGames();
         return;
@@ -1519,7 +1522,10 @@
       cargarRatingsCards();
     } catch(e) {
       // Si hay error, mostrar las cards estáticas del HTML como fallback
-      document.querySelectorAll('.game-card[data-static]').forEach(c => c.removeAttribute('data-static'));
+      document.querySelectorAll('.game-card[data-static]').forEach(c => {
+        c.removeAttribute('data-static');
+        c.style.display = '';
+      });
       document.getElementById('cards-loading')?.remove();
       initFavBtns(); updateCounts(); filterGames();
     }
@@ -3696,3 +3702,4 @@ Link de descarga: https://github.com/...</pre>
 </style>
 </body>
 </html>
+
