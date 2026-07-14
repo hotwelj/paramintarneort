@@ -1445,7 +1445,6 @@
   }
 
   window.cargarJuegosDesdeFirestore = async function cargarJuegosDesdeFirestore() {
-    console.log('cargarJuegosDesdeFirestore iniciando...');
     try {
       const res = await fetch("https://ort-admin.simonabulafia.workers.dev", {
         method: "POST",
@@ -1453,7 +1452,6 @@
         body: JSON.stringify({ action: "list_juegos" }),
       });
       const data = await res.json();
-      console.log('list_juegos respuesta:', data.ok, 'juegos:', data.juegos?.length);
       if (!data.ok || !data.juegos || !data.juegos.length) {
         // Si falla Firestore, mostrar las cards estáticas del HTML
         document.querySelectorAll('.game-card[data-static]').forEach(c => {
@@ -1468,11 +1466,8 @@
       if (!grid) { console.error('games-grid no encontrada'); return; }
       // Remover TODAS las cards (estáticas y dinámicas) antes de reinsertar
       document.querySelectorAll('.game-card').forEach(c => c.remove());
-      const loadingEl = document.getElementById('cards-loading');
-      console.log('loading el:', loadingEl ? 'existe' : 'no existe');
-      if (loadingEl) loadingEl.remove();
+      document.getElementById('cards-loading')?.remove();
       // Insertar cards desde Firestore
-      console.log('Insertando', data.juegos.length, 'cards en la grilla');
       data.juegos.forEach(j => {
         const wc = j.weightClass || 'weight-liviano';
         const wl = j.weightLabel || '';
