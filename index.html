@@ -1468,7 +1468,9 @@
       if (!grid) { console.error('games-grid no encontrada'); return; }
       // Remover TODAS las cards (estáticas y dinámicas) antes de reinsertar
       document.querySelectorAll('.game-card').forEach(c => c.remove());
-      document.getElementById('cards-loading')?.remove();
+      const loadingEl = document.getElementById('cards-loading');
+      console.log('loading el:', loadingEl ? 'existe' : 'no existe');
+      if (loadingEl) loadingEl.remove();
       // Insertar cards desde Firestore
       console.log('Insertando', data.juegos.length, 'cards en la grilla');
       data.juegos.forEach(j => {
